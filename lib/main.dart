@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:smartconnect/splash_screen.dart';
 import 'package:smartconnect/admin_dashboard.dart';
 import 'package:smartconnect/customer_screen.dart';
@@ -44,13 +45,27 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'SmartConnect',
+      title: 'سمارت كونكت',
       debugShowCheckedModeBanner: false,
+      locale: const Locale('ar', ''),
+      localizationsDelegates: const [
+        // يدعم الـ RTL تلقائياً
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('ar', ''),
+        Locale('en', ''),
+      ],
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const SplashScreen(),
+      home: Directionality(
+        textDirection: TextDirection.rtl,
+        child: const SplashScreen(),
+      ),
       routes: {
         '/admin': (_) => const AdminDashboardScreen(),
         '/customer': (_) => const CustomerDashboardScreen(),
