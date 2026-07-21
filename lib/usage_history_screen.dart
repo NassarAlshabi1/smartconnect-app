@@ -17,7 +17,7 @@ class UsageHistoryScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Usage History'),
+        title: const Text('سجل الاستخدام'),
         backgroundColor: Colors.deepPurple,
       ),
       body: StreamBuilder<QuerySnapshot>(

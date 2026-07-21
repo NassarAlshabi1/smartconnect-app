@@ -21,7 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (phone.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter all fields')),
+        const SnackBar(content: Text('يرجى إدخال جميع البيانات')),
       );
       return;
     }
@@ -138,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         keyboardType: TextInputType.phone,
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Icons.person),
-                          labelText: 'Phone Number',
+                          labelText: 'رقم الهاتف',
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -148,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         obscureText: _obscurePassword,
                         decoration: InputDecoration(
                           prefixIcon: const Icon(Icons.lock),
-                          labelText: 'Password',
+                          labelText: 'كلمة المرور',
                           border: const OutlineInputBorder(),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -181,13 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed: () {
                           Navigator.pushNamed(context, '/forgot');
                         },
-                        child: const Text('Forgot Password?'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/create');
-                        },
-                        child: const Text('Create Account'),
+                        child: const Text('نسيت كلمة المرور؟'),
                       ),
                     ],
                   ),

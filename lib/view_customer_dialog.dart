@@ -62,7 +62,7 @@ class ViewCustomerDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Close'),
+          child: const Text('إغلاق'),
         ),
         TextButton(
           onPressed: () {
@@ -75,7 +75,7 @@ class ViewCustomerDialog extends StatelessWidget {
               ),
             );
           },
-          child: const Text('Assign Voucher'),
+          child: const Text('تعيين قسيمة'),
         ),
         ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
@@ -188,7 +188,7 @@ class ViewVoucherHistoryDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Close'),
+          child: const Text('إغلاق'),
         ),
       ],
     );

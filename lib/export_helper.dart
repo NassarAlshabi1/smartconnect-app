@@ -64,7 +64,7 @@ Future<void> exportPaymentsToCSV(
               ),
               ElevatedButton.icon(
                 icon: const Icon(Icons.share),
-                label: const Text('Share'),
+                label: const Text('مشاركة'),
                 onPressed: () {
                   Share.shareXFiles([XFile(path)],
                       text: 'SmartConnect CSV Report - $monthTitle');

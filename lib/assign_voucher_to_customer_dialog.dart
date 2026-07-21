@@ -37,12 +37,12 @@ class _AssignVoucherToCustomerDialogState
               return const Center(child: CircularProgressIndicator());
             }
             if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return const Text('No active vouchers available.');
+              return const Text('لا توجد قسائم نشطة متاحة.');
             }
             return DropdownButtonFormField<String>(
               initialValue: _selectedVoucherId,
               decoration: const InputDecoration(
-                labelText: 'Select Voucher',
+                labelText: 'اختر قسيمة',
                 border: OutlineInputBorder(),
               ),
               items: snapshot.data!.docs.map((doc) {
@@ -64,7 +64,7 @@ class _AssignVoucherToCustomerDialogState
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: const Text('إلغاء'),
         ),
         ElevatedButton(
           onPressed: _isLoading || _selectedVoucherId == null
@@ -85,7 +85,7 @@ class _AssignVoucherToCustomerDialogState
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                            content: Text('Voucher assigned successfully')),
+                            content: Text('تم تعيين القسيمة بنجاح')),
                       );
                     }
                   } catch (e) {

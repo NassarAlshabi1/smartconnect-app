@@ -138,7 +138,7 @@ class _BuyVoucherScreenState extends State<BuyVoucherScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Buy Voucher'),
+        title: const Text('شراء قسيمة'),
         backgroundColor: const Color(0xFFFF7043),
       ),
       body: Padding(

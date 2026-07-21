@@ -46,7 +46,7 @@ class _AdminMessageScreenState extends State<AdminMessageScreen> {
                         height: 20,
                         child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                       )
-                    : const Text('Send Message'),
+                    : const Text('إرسال رسالة'),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple),
                 onPressed: _isSending ? null : _handleSendMessage,
               ),

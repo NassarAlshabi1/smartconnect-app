@@ -53,7 +53,7 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.add, color: Colors.green),
-            tooltip: 'Add Voucher',
+            tooltip: 'إضافة قسيمة',
             onPressed: () {
               showDialog(
                 context: context,
@@ -92,7 +92,7 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
                   flex: 1,
                   child: DropdownButtonFormField<String>(
                     initialValue: _statusFilter,
-                    decoration: const InputDecoration(labelText: 'Status'),
+                    decoration: const InputDecoration(labelText: 'الحالة'),
                     items: ['all', 'available', 'assigned', 'used', 'expired'].map((status) {
                       return DropdownMenuItem(value: status, child: Text(status));
                     }).toList(),
@@ -165,7 +165,7 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
                           children: [
                             IconButton(
                               icon: const Icon(Icons.edit, color: Colors.green),
-                              tooltip: 'Edit',
+                              tooltip: 'تعديل',
                               onPressed: () {
                                 showDialog(
                                   context: context,
@@ -175,7 +175,7 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
                             ),
                             IconButton(
                               icon: const Icon(Icons.delete, color: Colors.red),
-                              tooltip: 'Delete',
+                              tooltip: 'حذف',
                               onPressed: () {
                                 showDialog(
                                   context: context,
@@ -185,7 +185,7 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
                                     actions: [
                                       TextButton(
                                         onPressed: () => Navigator.pop(context),
-                                        child: const Text('Cancel'),
+                                        child: const Text('إلغاء'),
                                       ),
                                       TextButton(
                                         onPressed: () async {

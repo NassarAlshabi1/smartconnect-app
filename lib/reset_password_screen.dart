@@ -158,7 +158,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with TickerPr
                                     controller: _passwordController,
                                     obscureText: true,
                                     decoration: const InputDecoration(
-                                      labelText: 'New Password',
+                                      labelText: 'كلمة المرور الجديدة',
                                       border: OutlineInputBorder(),
                                     ),
                                     validator: (val) {
@@ -173,7 +173,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with TickerPr
                                     controller: _confirmController,
                                     obscureText: true,
                                     decoration: const InputDecoration(
-                                      labelText: 'Confirm Password',
+                                      labelText: 'تأكيد كلمة المرور',
                                       border: OutlineInputBorder(),
                                     ),
                                     validator: (val) {
@@ -189,7 +189,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with TickerPr
                                     height: 48,
                                     child: ElevatedButton.icon(
                                       icon: const Icon(Icons.lock_reset),
-                                      label: const Text('Reset Password'),
+                                      label: const Text('إعادة تعيين كلمة المرور'),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.orange[700],
                                       ),

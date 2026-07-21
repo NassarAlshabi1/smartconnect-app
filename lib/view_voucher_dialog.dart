@@ -24,7 +24,7 @@ class ViewVoucherDialog extends StatelessWidget {
         ],
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close')),
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text('إغلاق')),
       ],
     );
   }

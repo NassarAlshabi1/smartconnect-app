@@ -37,7 +37,7 @@ class AdminDashboardScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            tooltip: 'Logout',
+            tooltip: 'تسجيل الخروج',
             color: Colors.orange,
             onPressed: () => _logout(context),
           ),

@@ -60,7 +60,7 @@ class _ManageVoucherPackagesScreenState extends State<ManageVoucherPackagesScree
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('إلغاء')),
           ElevatedButton(
             onPressed: () async {
               if (_formKey.currentState!.validate()) {
@@ -77,7 +77,7 @@ class _ManageVoucherPackagesScreenState extends State<ManageVoucherPackagesScree
                 Navigator.of(context).pop();
               }
             },
-            child: const Text('Save'),
+            child: const Text('حفظ'),
           ),
         ],
       ),
@@ -115,8 +115,8 @@ class _ManageVoucherPackagesScreenState extends State<ManageVoucherPackagesScree
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
-          ElevatedButton(onPressed: _addPackage, child: const Text('Add')),
+          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('إلغاء')),
+          ElevatedButton(onPressed: _addPackage, child: const Text('إضافة')),
         ],
       ),
     );
@@ -126,7 +126,7 @@ class _ManageVoucherPackagesScreenState extends State<ManageVoucherPackagesScree
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Manage Voucher Packages'),
+        title: const Text('إدارة باقات القسائم'),
         backgroundColor: Colors.deepPurple,
         actions: [
           Tooltip(

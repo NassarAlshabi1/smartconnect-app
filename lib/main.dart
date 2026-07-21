@@ -4,7 +4,6 @@ import 'package:smartconnect/splash_screen.dart';
 import 'package:smartconnect/admin_dashboard.dart';
 import 'package:smartconnect/customer_screen.dart';
 import 'package:smartconnect/forgot_password_screen.dart';
-import 'package:smartconnect/create_account_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 // hakikisha path ni sahihi
 import 'package:smartconnect/main_dashboard.dart';
@@ -70,7 +69,6 @@ class MyApp extends StatelessWidget {
         '/admin': (_) => const AdminDashboardScreen(),
         '/customer': (_) => const CustomerDashboardScreen(),
         '/forgot': (_) => const ForgotPasswordScreen(),
-        '/create': (_) => const CreateAccountScreen(),
         '/dashboard': (context) => const MainDashboard(),
         '/speed-test': (context) => const ManageVoucherPackagesScreen(),
         '/payments' : (context) => const AdminPaymentsScreen(),

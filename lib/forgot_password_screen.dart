@@ -58,7 +58,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Reset Password')),
+      appBar: AppBar(title: const Text('إعادة تعيين كلمة المرور')),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
@@ -76,7 +76,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     keyboardType: TextInputType.phone,
                     decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.phone),
-                      labelText: 'Phone Number',
+                      labelText: 'رقم الهاتف',
                       border: OutlineInputBorder(),
                     ),
                   ),

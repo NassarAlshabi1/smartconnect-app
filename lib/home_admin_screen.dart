@@ -90,7 +90,7 @@ class _HomeAdminScreenState extends State<HomeAdminScreen> {
                 ),
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+                TextButton(onPressed: () => Navigator.pop(context), child: const Text('إلغاء')),
                 ElevatedButton(
                   onPressed: () async {
                     if (docId != null) {
@@ -109,7 +109,7 @@ class _HomeAdminScreenState extends State<HomeAdminScreen> {
                       const SnackBar(content: Text('✅ Packages assigned')),
                     );
                   },
-                  child: const Text('Save'),
+                  child: const Text('حفظ'),
                 ),
               ],
             );
@@ -131,7 +131,7 @@ class _HomeAdminScreenState extends State<HomeAdminScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF001F3F),
       appBar: AppBar(
-        title: const Text('Home'),
+        title: const Text('الرئيسية'),
         backgroundColor: Colors.teal,
       ),
       body: Padding(

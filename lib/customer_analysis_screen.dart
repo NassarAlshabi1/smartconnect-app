@@ -53,7 +53,7 @@ class _CustomerAnalysisScreenState extends State<CustomerAnalysisScreen> {
       child: Scaffold(
         backgroundColor: const Color(0xFF001F3F),
         appBar: AppBar(
-          title: const Text('Customer Analysis'),
+          title: const Text('تحليل العملاء'),
           backgroundColor: Colors.teal,
           actions: [
             PopupMenuButton<String>(

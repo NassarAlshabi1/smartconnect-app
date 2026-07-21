@@ -149,7 +149,7 @@ class _MainDashboardState extends State<MainDashboard> {
               mainAxisSpacing: 16,
               children: [
                 _dashboardTile(
-                  title: 'Manage Voucher Packages',
+                  title: 'إدارة باقات القسائم',
                   icon: Icons.card_giftcard,
                   color: Colors.teal,
                   onTap: () {
@@ -165,7 +165,7 @@ class _MainDashboardState extends State<MainDashboard> {
                   },
                 ),
                 _dashboardTile(
-                  title: 'Customer Analysis',
+                  title: 'تحليل العملاء',
                   icon: Icons.analytics,
                   color: Colors.orange,
                   onTap: () async {

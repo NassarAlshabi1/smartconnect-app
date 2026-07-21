@@ -47,7 +47,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 
     if (password != confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match')),
+        const SnackBar(content: Text('كلمتا المرور غير متطابقتين')),
       );
       return;
     }
@@ -75,7 +75,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text('Success'),
+          title: const Text('نجاح'),
           content: const Text('Your account has been created. You can now log in.'),
           actions: [
             TextButton(
@@ -83,7 +83,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                 Navigator.pop(context); // Close dialog
                 Navigator.pop(context); // Return to login screen
               },
-              child: const Text('OK'),
+              child: const Text('حسناً'),
             ),
           ],
         ),
@@ -101,12 +101,12 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text('Error'),
+          title: const Text('خطأ'),
           content: Text(message),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
+              child: const Text('حسناً'),
             ),
           ],
         ),
@@ -135,7 +135,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   TextField(
                     controller: _usernameController,
                     decoration: const InputDecoration(
-                      labelText: 'Full Name',
+                      labelText: 'الاسم الكامل',
                       prefixIcon: Icon(Icons.person),
                       border: OutlineInputBorder(),
                     ),
@@ -145,7 +145,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     controller: _phoneController,
                     keyboardType: TextInputType.phone,
                     decoration: const InputDecoration(
-                      labelText: 'Phone Number',
+                      labelText: 'رقم الهاتف',
                       prefixIcon: Icon(Icons.phone),
                       border: OutlineInputBorder(),
                     ),
@@ -155,7 +155,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     controller: _passwordController,
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
-                      labelText: 'Password',
+                      labelText: 'كلمة المرور',
                       prefixIcon: const Icon(Icons.lock),
                       border: const OutlineInputBorder(),
                       suffixIcon: IconButton(
@@ -171,7 +171,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     controller: _confirmPasswordController,
                     obscureText: _obscureConfirmPassword,
                     decoration: InputDecoration(
-                      labelText: 'Confirm Password',
+                      labelText: 'تأكيد كلمة المرور',
                       prefixIcon: const Icon(Icons.lock_outline),
                       border: const OutlineInputBorder(),
                       suffixIcon: IconButton(

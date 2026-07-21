@@ -146,8 +146,8 @@ class _AddVoucherDialogState extends State<AddVoucherDialog> {
               ),
             ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-        ElevatedButton(onPressed: _submitVoucher, child: const Text('Add')),
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text('إلغاء')),
+        ElevatedButton(onPressed: _submitVoucher, child: const Text('إضافة')),
       ],
     );
   }

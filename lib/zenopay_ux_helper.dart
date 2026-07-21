@@ -23,7 +23,7 @@ class ZenopayUXHelper {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
+            child: const Text('حسناً'),
           ),
         ],
       ),
@@ -52,14 +52,14 @@ class ZenopayUXHelper {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: const Text('إلغاء'),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
               onRetry();
             },
-            child: const Text('Retry'),
+            child: const Text('إعادة المحاولة'),
           ),
         ],
       ),

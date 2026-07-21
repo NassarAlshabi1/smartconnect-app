@@ -94,7 +94,7 @@ class _EditVoucherDialogState extends State<EditVoucherDialog> {
     final isLoading = isLoadingNetworks || isLoadingPackages;
 
     return AlertDialog(
-      title: const Text('Edit Voucher'),
+      title: const Text('تعديل قسيمة'),
       content: isLoading
           ? const SizedBox(height: 100, child: Center(child: CircularProgressIndicator()))
           : SingleChildScrollView(
@@ -159,7 +159,7 @@ class _EditVoucherDialogState extends State<EditVoucherDialog> {
               ),
             ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text('إلغاء')),
         ElevatedButton(onPressed: _updateVoucher, child: const Text('Update')),
       ],
     );
