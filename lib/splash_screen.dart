@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:smartconnect/main_dashboard.dart';
+import 'package:smartconnect/mikrotik_connection_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -14,11 +14,11 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
 
-    // انتظار 3 ثوانٍ ثم الانتقال مباشرة إلى لوحة التحكم الرئيسية
+    // انتظار 3 ثوانٍ ثم الانتقال مباشرة إلى شاشة الاتصال بالماكروتك
     Timer(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const MainDashboard()),
+        MaterialPageRoute(builder: (_) => const MikrotikConnectionScreen()),
       );
     });
   }
