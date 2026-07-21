@@ -31,7 +31,7 @@ class _CustomerManagementScreenState extends State<CustomerManagementScreen> {
             ),
           ),
           Container(
-            color: Colors.black.withOpacity(0.65),
+            color: Colors.black.withValues(alpha: 0.65),
             child: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
@@ -132,7 +132,7 @@ class _CustomerManagementScreenState extends State<CustomerManagementScreen> {
                                   : 'Unknown';
 
                               return Card(
-                                color: Colors.white.withOpacity(0.05),
+                                color: Colors.white.withValues(alpha: 0.05),
                                 margin: const EdgeInsets.symmetric(vertical: 6),
                                 child: ListTile(
                                   leading: const Icon(Icons.person, color: Colors.green),
@@ -169,7 +169,7 @@ class _CustomerManagementScreenState extends State<CustomerManagementScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.9),
+        color: color.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(

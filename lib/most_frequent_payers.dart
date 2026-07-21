@@ -34,7 +34,7 @@ class MostFrequentPayers extends StatelessWidget {
     final top5 = topPayers.take(5).toList();
 
     return Card(
-      color: Colors.deepPurple.withOpacity(0.1),
+      color: Colors.deepPurple.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 2,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

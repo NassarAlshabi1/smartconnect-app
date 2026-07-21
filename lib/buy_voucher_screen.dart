@@ -136,8 +136,6 @@ class _BuyVoucherScreenState extends State<BuyVoucherScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = isLoadingNetworks || isLoadingPackages;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Buy Voucher'),
@@ -152,7 +150,7 @@ class _BuyVoucherScreenState extends State<BuyVoucherScreen> {
               isLoadingNetworks
                   ? _buildShimmerDropdown(label: 'Select Network')
                   : DropdownButtonFormField<String>(
-                      value: selectedNetwork,
+                      initialValue: selectedNetwork,
                       decoration: const InputDecoration(labelText: 'Select Network'),
                       items: networkOptions.map((network) {
                         return DropdownMenuItem(value: network, child: Text(network));
@@ -171,7 +169,7 @@ class _BuyVoucherScreenState extends State<BuyVoucherScreen> {
               isLoadingPackages
                   ? _buildShimmerDropdown(label: 'Select Package')
                   : DropdownButtonFormField<String>(
-                      value: selectedPackage,
+                      initialValue: selectedPackage,
                       decoration: const InputDecoration(labelText: 'Select Package'),
                       items: assignedPackages.map((pkg) {
                         return DropdownMenuItem(value: pkg, child: Text(pkg));

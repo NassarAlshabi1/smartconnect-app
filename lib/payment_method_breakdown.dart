@@ -47,7 +47,7 @@ class PaymentMethodBreakdown extends StatelessWidget {
     final colors = [Colors.teal, Colors.orange, Colors.purple, Colors.blue];
 
     return Card(
-      color: Colors.blueGrey.withOpacity(0.1),
+      color: Colors.blueGrey.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Padding(

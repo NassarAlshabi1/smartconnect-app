@@ -36,7 +36,7 @@ class TopPayingCustomers extends StatelessWidget {
     final top5 = topCustomers.take(5).toList();
 
     return Card(
-      color: Colors.teal.withOpacity(0.1),
+      color: Colors.teal.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 2,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

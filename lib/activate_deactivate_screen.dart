@@ -72,7 +72,7 @@ class _ActivateDeactivateScreenState extends State<ActivateDeactivateScreen>
               children: [
                 Switch(
                   value: _showAdminsOnly,
-                  activeColor: Colors.orangeAccent,
+                  activeThumbColor: Colors.orangeAccent,
                   onChanged: (value) {
                     setState(() {
                       _showAdminsOnly = value;
@@ -144,8 +144,8 @@ class _ActivateDeactivateScreenState extends State<ActivateDeactivateScreen>
 
                         return Card(
                           color: isActive
-                              ? Colors.green.withOpacity(0.1)
-                              : Colors.red.withOpacity(0.1),
+                              ? Colors.green.withValues(alpha: 0.1)
+                              : Colors.red.withValues(alpha: 0.1),
                           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                           child: ListTile(
                             leading: Icon(
@@ -185,7 +185,7 @@ class _ActivateDeactivateScreenState extends State<ActivateDeactivateScreen>
                               children: [
                                 Switch(
                                   value: isActive,
-                                  activeColor: Colors.greenAccent,
+                                  activeThumbColor: Colors.greenAccent,
                                   onChanged: (value) {
                                     FirebaseFirestore.instance
                                         .collection('users')

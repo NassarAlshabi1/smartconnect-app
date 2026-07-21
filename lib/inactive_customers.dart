@@ -51,7 +51,7 @@ class InactiveCustomers extends StatelessWidget {
       ..sort((a, b) => a.value.compareTo(b.value));
 
     return Card(
-      color: Colors.orange.withOpacity(0.1),
+      color: Colors.orange.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 2,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

@@ -97,7 +97,7 @@ class _AddVoucherDialogState extends State<AddVoucherDialog> {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: selectedNetwork,
+                      initialValue: selectedNetwork,
                       decoration: const InputDecoration(labelText: 'Network Name'),
                       items: networkOptions.map((network) {
                         return DropdownMenuItem(value: network, child: Text(network));
@@ -107,7 +107,7 @@ class _AddVoucherDialogState extends State<AddVoucherDialog> {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: selectedPackage,
+                      initialValue: selectedPackage,
                       decoration: const InputDecoration(labelText: 'Package'),
                       items: packageOptions.map((pkg) {
                         return DropdownMenuItem(value: pkg, child: Text(pkg));

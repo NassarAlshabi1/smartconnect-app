@@ -317,7 +317,7 @@ StreamBuilder<QuerySnapshot>(
           child: Column(
             children: [
               CircleAvatar(
-                backgroundColor: color.withOpacity(0.15),
+                backgroundColor: color.withValues(alpha: 0.15),
                 child: Icon(icon, color: color),
               ),
               const SizedBox(height: 8),
@@ -340,7 +340,7 @@ StreamBuilder<QuerySnapshot>(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: color.withOpacity(0.9),
+          color: color.withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(

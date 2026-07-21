@@ -49,7 +49,7 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
           'Voucher Management',
           style: TextStyle(color: Colors.green),
         ),
-        backgroundColor: Colors.black.withOpacity(0.7),
+        backgroundColor: Colors.black.withValues(alpha: 0.7),
         actions: [
           IconButton(
             icon: const Icon(Icons.add, color: Colors.green),
@@ -91,7 +91,7 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
                 Flexible(
                   flex: 1,
                   child: DropdownButtonFormField<String>(
-                    value: _statusFilter,
+                    initialValue: _statusFilter,
                     decoration: const InputDecoration(labelText: 'Status'),
                     items: ['all', 'available', 'assigned', 'used', 'expired'].map((status) {
                       return DropdownMenuItem(value: status, child: Text(status));
@@ -103,7 +103,7 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
                 Flexible(
                   flex: 1,
                   child: DropdownButtonFormField<String>(
-                    value: _packageFilter,
+                    initialValue: _packageFilter,
                     decoration: const InputDecoration(labelText: 'Package'),
                     isExpanded: true,
                     items: ['all', ...packageOptions].map((pkg) {
@@ -148,7 +148,6 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
                     final doc = filtered[index];
                     final voucher = doc.data() as Map<String, dynamic>;
                     final expiry = (voucher['expiry'] as Timestamp).toDate();
-                    final status = voucher['status'] ?? 'unknown';
 
                     return Card(
                       child: ListTile(
@@ -215,16 +214,4 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
     );
   }
 
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'used':
-        return Colors.green.shade400;
-      case 'assigned':
-        return Colors.blue.shade300;
-      case 'expired':
-        return Colors.grey;
-      default:
-        return Colors.orange.shade300;
-    }
-  }
 }

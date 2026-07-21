@@ -27,7 +27,7 @@ class AdminDashboardScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.black.withOpacity(0.6),
+        backgroundColor: Colors.black.withValues(alpha: 0.6),
         elevation: 0,
         title: const Text(
           'SmartConnect Admin',
@@ -91,7 +91,7 @@ class AdminDashboardScreen extends StatelessWidget {
               fit: BoxFit.cover,
             ),
           ),
-          Container(color: Colors.black.withOpacity(0.4)),
+          Container(color: Colors.black.withValues(alpha: 0.4)),
           StreamBuilder<DocumentSnapshot>(
             stream: userStream,
             builder: (context, snapshot) {

@@ -18,6 +18,22 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
+    // ✅ Production signing config from key.properties
+    val keystoreProperties = java.util.Properties()
+    val keystorePropertiesFile = rootProject.file("key.properties")
+    if (keystorePropertiesFile.exists()) {
+        keystoreProperties.load(java.io.FileInputStream(keystorePropertiesFile))
+    }
+
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String?
+            keyPassword = keystoreProperties["keyPassword"] as String?
+            storeFile = keystoreProperties["storeFile"]?.let { file(it as String) }
+            storePassword = keystoreProperties["storePassword"] as String?
+        }
+    }
+
     defaultConfig {
         applicationId = "com.hussein.smartconnect"
         minSdk = 21
@@ -28,7 +44,7 @@ android {
 
     buildTypes {
         getByName("release") {
-            signingConfig = signingConfigs.getByName("debug") // Replace with production config if needed
+            signingConfig = signingConfigs.getByName("release")
             isShrinkResources = true
             isMinifyEnabled = true
             proguardFiles.add(getDefaultProguardFile("proguard-android-optimize.txt"))
@@ -36,7 +52,6 @@ android {
         }
     }
 
-    // ✅ Hii ndiyo override ya dependency ya core-ktx
     configurations.all {
         resolutionStrategy {
             force("androidx.core:core-ktx:1.12.0")

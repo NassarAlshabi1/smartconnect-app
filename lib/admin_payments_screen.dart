@@ -45,14 +45,14 @@ class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
       margin: const EdgeInsets.all(6),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           CircleAvatar(
-            backgroundColor: color.withOpacity(0.25),
+            backgroundColor: color.withValues(alpha: 0.25),
             child: Icon(icon, color: color),
           ),
           const SizedBox(width: 12),
@@ -219,7 +219,7 @@ class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
                     final method = data['channel'] ?? 'Unknown';
 
                     return Card(
-                      color: Colors.teal.withOpacity(0.2),
+                      color: Colors.teal.withValues(alpha: 0.2),
                       margin: const EdgeInsets.symmetric(vertical: 6),
                       child: ListTile(
                         leading: const Icon(Icons.receipt,

@@ -62,7 +62,7 @@ Future<void> exportPaymentsToPDF(
           ],
         ),
         pw.SizedBox(height: 16),
-        pw.Table.fromTextArray(
+        pw.TableHelper.fromTextArray(
           headers: ['Customer', 'Amount', 'Method', 'Date'],
           data: payments.map((doc) {
             final name = doc['buyer_name'] ?? 'Unknown';

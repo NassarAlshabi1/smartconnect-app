@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
@@ -110,13 +109,13 @@ Future<void> exportAnalysisToPDF({
         pw.Bullet(text: 'Inactive Customers: ${inactiveIds.length}'),
         pw.SizedBox(height: 12),
         pw.Text('🏆 Top Paying Customers', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
-        pw.Table.fromTextArray(
+        pw.TableHelper.fromTextArray(
           headers: ['Customer', 'Amount'],
           data: topSorted.map((e) => [e.key, 'TSh ${e.value.toStringAsFixed(0)}']).toList(),
         ),
         pw.SizedBox(height: 12),
         pw.Text('🔁 Most Frequent Payers', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
-        pw.Table.fromTextArray(
+        pw.TableHelper.fromTextArray(
           headers: ['Customer', 'Payments'],
           data: freq5.map((e) => [e.key, '${e.value}']).toList(),
         ),
@@ -130,7 +129,7 @@ Future<void> exportAnalysisToPDF({
               : inactiveIds.join(', ')),
         pw.SizedBox(height: 12),
         pw.Text('💳 Payment Method Breakdown', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
-        pw.Table.fromTextArray(
+        pw.TableHelper.fromTextArray(
           headers: ['Channel', 'Count'],
           data: methodMap.entries.map((e) => [e.key, '${e.value}']).toList(),
         ),

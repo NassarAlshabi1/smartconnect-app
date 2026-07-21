@@ -238,7 +238,7 @@ class _MainDashboardState extends State<MainDashboard> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.9),
+          color: color.withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -282,7 +282,7 @@ class _MainDashboardState extends State<MainDashboard> {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.teal.withOpacity(0.2),
+                    color: Colors.teal.withValues(alpha: 0.2),
                   ),
                   child: Icon(icon, color: Colors.white),
                 ),
@@ -339,7 +339,7 @@ class _MainDashboardState extends State<MainDashboard> {
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.teal.withOpacity(0.2),
+          color: Colors.teal.withValues(alpha: 0.2),
         ),
         child: Icon(icon, color: Colors.white),
       ),

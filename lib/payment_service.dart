@@ -79,6 +79,7 @@ class PaymentService {
 
     int attempts = 0;
     const maxAttempts = 3;
+    // ignore: unused_local_variable
     String lastError = "";
 
     while (attempts < maxAttempts) {
