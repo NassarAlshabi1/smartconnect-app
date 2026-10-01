@@ -1,0 +1,63 @@
+ # ════════════════════════════════════════════════════════════════════════════
+#  SmartConnect — Build Release APK
+# ════════════════════════════════════════════════════════════════════════════
+#
+#  يبني release APK موقّع بـ keystore مُضمّن في المستودع.
+#  لا يُرفع إلى Google Play — التوزيع مباشر عبر APK.
+#
+#  المميزات:
+#    - flutter analyze قبل البناء
+#    - بناء release APK موقّع
+#    - رفع APK كـ artifact
+#    - يعمل على push لـ main + workflow_dispatch
+# ════════════════════════════════════════════════════════════════════════════
+
+name: Build Release APK
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'lib/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'android/**'
+      - '.github/workflows/build-release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: 🔨 Build Release APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v5
+
+      - name: 🐦 Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: stable
+          cache: true
+
+      - name: 📦 Install dependencies
+        run: flutter pub get
+
+      - name: 🔍 Flutter Analyze
+        run: flutter analyze --no-fatal-infos
+
+      - name: 🏗️ Build Release APK
+        run: flutter build apk --release --no-tree-shake-icons
+
+      - name: 📤 Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: smartconnect-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
