@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 
 class HomeAdminScreen extends StatefulWidget {
   const HomeAdminScreen({super.key});
@@ -24,7 +24,7 @@ class _HomeAdminScreenState extends State<HomeAdminScreen> {
     setState(() => _isSaving = true);
 
     try {
-      await FirebaseFirestore.instance.collection('networks').add({
+      await LocalDatabase.instance.collection('networks').add({
         'name': name,
         'created_at': FieldValue.serverTimestamp(),
       });
@@ -44,10 +44,14 @@ class _HomeAdminScreenState extends State<HomeAdminScreen> {
   }
 
   Future<void> _assignPackages(String networkName) async {
-    final snapshot = await FirebaseFirestore.instance.collection('voucher_packages').get();
-    final allPackages = snapshot.docs.map((doc) => doc['name'].toString()).toList();
+    final snapshot = await LocalDatabase.instance
+        .collection('voucher_packages')
+        .get();
+    final allPackages = snapshot.docs
+        .map((doc) => doc['name'].toString())
+        .toList();
 
-    final assignmentSnapshot = await FirebaseFirestore.instance
+    final assignmentSnapshot = await LocalDatabase.instance
         .collection('network_packages')
         .where('network', isEqualTo: networkName)
         .limit(1)
@@ -57,7 +61,7 @@ class _HomeAdminScreenState extends State<HomeAdminScreen> {
     String? docId;
 
     if (assignmentSnapshot.docs.isNotEmpty) {
-      final data = assignmentSnapshot.docs.first.data();
+      final data = assignmentSnapshot.docs.first.data()!;
       selectedPackages = List<String>.from(data['packages']);
       docId = assignmentSnapshot.docs.first.id;
     }
@@ -90,19 +94,25 @@ class _HomeAdminScreenState extends State<HomeAdminScreen> {
                 ),
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
                 ElevatedButton(
                   onPressed: () async {
                     if (docId != null) {
-                      await FirebaseFirestore.instance.collection('network_packages').doc(docId).update({
-                        'packages': selectedPackages,
-                      });
+                      await LocalDatabase.instance
+                          .collection('network_packages')
+                          .doc(docId)
+                          .update({'packages': selectedPackages});
                     } else {
-                      await FirebaseFirestore.instance.collection('network_packages').add({
-                        'network': networkName,
-                        'packages': selectedPackages,
-                        'assigned_at': FieldValue.serverTimestamp(),
-                      });
+                      await LocalDatabase.instance
+                          .collection('network_packages')
+                          .add({
+                            'network': networkName,
+                            'packages': selectedPackages,
+                            'assigned_at': FieldValue.serverTimestamp(),
+                          });
                     }
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -120,20 +130,17 @@ class _HomeAdminScreenState extends State<HomeAdminScreen> {
   }
 
   Future<void> _deleteNetwork(String docId) async {
-    await FirebaseFirestore.instance.collection('networks').doc(docId).delete();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('🗑️ Network deleted')),
-    );
+    await LocalDatabase.instance.collection('networks').doc(docId).delete();
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('🗑️ Network deleted')));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF001F3F),
-      appBar: AppBar(
-        title: const Text('Home'),
-        backgroundColor: Colors.teal,
-      ),
+      appBar: AppBar(title: const Text('Home'), backgroundColor: Colors.teal),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -182,15 +189,20 @@ class _HomeAdminScreenState extends State<HomeAdminScreen> {
             const SizedBox(height: 12),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
+                stream: LocalDatabase.instance
                     .collection('networks')
                     .orderBy('created_at', descending: true)
                     .snapshots(),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                  if (!snapshot.hasData)
+                    return const Center(child: CircularProgressIndicator());
 
                   final docs = snapshot.data!.docs;
-                  if (docs.isEmpty) return const Text('No networks yet', style: TextStyle(color: Colors.white70));
+                  if (docs.isEmpty)
+                    return const Text(
+                      'No networks yet',
+                      style: TextStyle(color: Colors.white70),
+                    );
 
                   return ListView.builder(
                     itemCount: docs.length,
@@ -203,16 +215,25 @@ class _HomeAdminScreenState extends State<HomeAdminScreen> {
                         color: Colors.blueGrey.shade900,
                         margin: const EdgeInsets.symmetric(vertical: 6),
                         child: ListTile(
-                          title: Text(name, style: const TextStyle(color: Colors.white)),
+                          title: Text(
+                            name,
+                            style: const TextStyle(color: Colors.white),
+                          ),
                           trailing: Wrap(
                             spacing: 8,
                             children: [
                               IconButton(
-                                icon: const Icon(Icons.edit, color: Colors.tealAccent),
+                                icon: const Icon(
+                                  Icons.edit,
+                                  color: Colors.tealAccent,
+                                ),
                                 onPressed: () => _assignPackages(name),
                               ),
                               IconButton(
-                                icon: const Icon(Icons.delete, color: Colors.redAccent),
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.redAccent,
+                                ),
                                 onPressed: () => _deleteNetwork(docId),
                               ),
                             ],

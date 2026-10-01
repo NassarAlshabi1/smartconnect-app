@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:smartconnect/local_database.dart';
+import 'package:smartconnect/local_auth_service.dart';
 
 class FeedbackScreen extends StatefulWidget {
   const FeedbackScreen({super.key});
@@ -11,7 +11,7 @@ class FeedbackScreen extends StatefulWidget {
 
 class _FeedbackScreenState extends State<FeedbackScreen> {
   final TextEditingController _controller = TextEditingController();
-  final uid = FirebaseAuth.instance.currentUser!.uid;
+  final uid = AuthService.instance.currentUser!.uid;
   String? editingId;
   bool isSubmitting = false;
 
@@ -23,7 +23,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
     try {
       if (editingId != null) {
-        await FirebaseFirestore.instance
+        await LocalDatabase.instance
             .collection('feedbacks')
             .doc(editingId)
             .update({'message': message});
@@ -31,7 +31,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           const SnackBar(content: Text('✅ Feedback updated successfully')),
         );
       } else {
-        await FirebaseFirestore.instance.collection('feedbacks').add({
+        await LocalDatabase.instance.collection('feedbacks').add({
           'user_id': uid,
           'message': message,
           'timestamp': Timestamp.now(),
@@ -54,10 +54,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   }
 
   void deleteFeedback(String id) async {
-    await FirebaseFirestore.instance.collection('feedbacks').doc(id).delete();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('🗑️ Feedback deleted')),
-    );
+    await LocalDatabase.instance.collection('feedbacks').doc(id).delete();
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('🗑️ Feedback deleted')));
   }
 
   void startEditing(String id, String message) {
@@ -67,7 +67,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final feedbackStream = FirebaseFirestore.instance
+    final feedbackStream = LocalDatabase.instance
         .collection('feedbacks')
         .where('user_id', isEqualTo: uid)
         .orderBy('timestamp', descending: true)
@@ -97,7 +97,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   hintText: 'Write your feedback...',
                   filled: true,
                   fillColor: Colors.white,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
@@ -116,11 +118,15 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                           ),
                         )
                       : Icon(editingId != null ? Icons.edit : Icons.send),
-                  label: Text(editingId != null ? 'Update Feedback' : 'Send Feedback'),
+                  label: Text(
+                    editingId != null ? 'Update Feedback' : 'Send Feedback',
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF8E24AA),
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
               ),
@@ -145,7 +151,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     final docs = snapshot.data!.docs;
 
                     if (docs.isEmpty) {
-                      return const Center(child: Text('You haven’t submitted any feedback yet.'));
+                      return const Center(
+                        child: Text('You haven’t submitted any feedback yet.'),
+                      );
                     }
 
                     return ListView.builder(
@@ -154,7 +162,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                         final doc = docs[index];
                         final data = doc.data() as Map<String, dynamic>;
                         final message = data['message'] ?? '';
-                        final timestamp = (data['timestamp'] as Timestamp).toDate();
+                        final timestamp = (data['timestamp'] as Timestamp)
+                            .toDate();
 
                         return Card(
                           margin: const EdgeInsets.symmetric(vertical: 6),
@@ -168,11 +177,18 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                               spacing: 4,
                               children: [
                                 IconButton(
-                                  icon: const Icon(Icons.edit, color: Colors.deepPurple),
-                                  onPressed: () => startEditing(doc.id, message),
+                                  icon: const Icon(
+                                    Icons.edit,
+                                    color: Colors.deepPurple,
+                                  ),
+                                  onPressed: () =>
+                                      startEditing(doc.id, message),
                                 ),
                                 IconButton(
-                                  icon: const Icon(Icons.delete, color: Colors.red),
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
                                   onPressed: () => deleteFeedback(doc.id),
                                 ),
                               ],

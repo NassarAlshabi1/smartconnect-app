@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/pdf.dart';
@@ -36,10 +36,14 @@ Future<void> exportAnalysisToPDF({
 
   final totalPaid = filtered.fold<double>(
     0.0,
-    (sum, doc) => sum + ((doc['amount'] is num) ? doc['amount'].toDouble() : 0.0),
+    (sum, doc) =>
+        sum + ((doc['amount'] is num) ? doc['amount'].toDouble() : 0.0),
   );
 
-  final uniqueCustomers = filtered.map((doc) => doc['customer_id']).toSet().length;
+  final uniqueCustomers = filtered
+      .map((doc) => doc['customer_id'])
+      .toSet()
+      .length;
   final allCustomerIds = transactions.map((doc) => doc['customer_id']).toSet();
   final activeCustomerIds = filtered.map((doc) => doc['customer_id']).toSet();
   final inactiveIds = allCustomerIds.difference(activeCustomerIds);
@@ -94,42 +98,68 @@ Future<void> exportAnalysisToPDF({
             pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.end,
               children: [
-                pw.Text('SmartConnect Internet Services Ltd',
-                    style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
-                pw.Text('Customer Analysis Report - $monthLabel',
-                    style: const pw.TextStyle(fontSize: 12)),
+                pw.Text(
+                  'SmartConnect Internet Services Ltd',
+                  style: pw.TextStyle(
+                    fontSize: 16,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+                pw.Text(
+                  'Customer Analysis Report - $monthLabel',
+                  style: const pw.TextStyle(fontSize: 12),
+                ),
               ],
             ),
           ],
         ),
         pw.Divider(),
         pw.SizedBox(height: 8),
-        pw.Text('📊 Summary', style: pw.TextStyle(fontSize: 15, fontWeight: pw.FontWeight.bold)),
+        pw.Text(
+          '📊 Summary',
+          style: pw.TextStyle(fontSize: 15, fontWeight: pw.FontWeight.bold),
+        ),
         pw.Bullet(text: 'Total Paid: TSh ${totalPaid.toStringAsFixed(0)}'),
         pw.Bullet(text: 'Unique Customers: $uniqueCustomers'),
         pw.Bullet(text: 'Inactive Customers: ${inactiveIds.length}'),
         pw.SizedBox(height: 12),
-        pw.Text('🏆 Top Paying Customers', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+        pw.Text(
+          '🏆 Top Paying Customers',
+          style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+        ),
         pw.Table.fromTextArray(
           headers: ['Customer', 'Amount'],
-          data: topSorted.map((e) => [e.key, 'TSh ${e.value.toStringAsFixed(0)}']).toList(),
+          data: topSorted
+              .map((e) => [e.key, 'TSh ${e.value.toStringAsFixed(0)}'])
+              .toList(),
         ),
         pw.SizedBox(height: 12),
-        pw.Text('🔁 Most Frequent Payers', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+        pw.Text(
+          '🔁 Most Frequent Payers',
+          style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+        ),
         pw.Table.fromTextArray(
           headers: ['Customer', 'Payments'],
           data: freq5.map((e) => [e.key, '${e.value}']).toList(),
         ),
         pw.SizedBox(height: 12),
-        pw.Text('🕒 Inactive Customers', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+        pw.Text(
+          '🕒 Inactive Customers',
+          style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+        ),
         if (inactiveIds.isEmpty)
           pw.Text('✅ All customers have paid this month.')
         else
-          pw.Bullet(text: inactiveIds.length > 10
-              ? '${inactiveIds.length} inactive customers'
-              : inactiveIds.join(', ')),
+          pw.Bullet(
+            text: inactiveIds.length > 10
+                ? '${inactiveIds.length} inactive customers'
+                : inactiveIds.join(', '),
+          ),
         pw.SizedBox(height: 12),
-        pw.Text('💳 Payment Method Breakdown', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+        pw.Text(
+          '💳 Payment Method Breakdown',
+          style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+        ),
         pw.Table.fromTextArray(
           headers: ['Channel', 'Count'],
           data: methodMap.entries.map((e) => [e.key, '${e.value}']).toList(),
@@ -139,7 +169,10 @@ Future<void> exportAnalysisToPDF({
         pw.Row(
           mainAxisAlignment: pw.MainAxisAlignment.center,
           children: [
-            pw.Text('From UmemeSwahili Lab', style: const pw.TextStyle(fontSize: 10)),
+            pw.Text(
+              'From UmemeSwahili Lab',
+              style: const pw.TextStyle(fontSize: 10),
+            ),
             pw.SizedBox(width: 8),
             pw.Image(footerImage, width: 40),
           ],
@@ -163,8 +196,10 @@ Future<void> exportAnalysisToPDF({
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('✅ PDF has transferred!',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text(
+            '✅ PDF has transferred!',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -178,8 +213,9 @@ Future<void> exportAnalysisToPDF({
                 icon: const Icon(Icons.share),
                 label: const Text('Share'),
                 onPressed: () {
-                  Share.shareXFiles([XFile(filePath)],
-                      text: 'SmartConnect PDF Report - $monthLabel');
+                  Share.shareXFiles([
+                    XFile(filePath),
+                  ], text: 'SmartConnect PDF Report - $monthLabel');
                 },
               ),
             ],
@@ -206,7 +242,7 @@ Future<void> exportAnalysisToCSV({
   final monthLabel = DateFormat('MMMM yyyy').format(month);
   final buffer = StringBuffer();
 
-    final filtered = transactions.where((doc) {
+  final filtered = transactions.where((doc) {
     final status = doc['status']?.toString().toUpperCase();
     final date = (doc['created_at'] as Timestamp).toDate();
     return status == 'COMPLETED' &&
@@ -216,10 +252,14 @@ Future<void> exportAnalysisToCSV({
 
   final totalPaid = filtered.fold<double>(
     0.0,
-    (sum, doc) => sum + ((doc['amount'] is num) ? doc['amount'].toDouble() : 0.0),
+    (sum, doc) =>
+        sum + ((doc['amount'] is num) ? doc['amount'].toDouble() : 0.0),
   );
 
-  final uniqueCustomers = filtered.map((doc) => doc['customer_id']).toSet().length;
+  final uniqueCustomers = filtered
+      .map((doc) => doc['customer_id'])
+      .toSet()
+      .length;
   final allCustomerIds = transactions.map((doc) => doc['customer_id']).toSet();
   final activeCustomerIds = filtered.map((doc) => doc['customer_id']).toSet();
   final inactiveIds = allCustomerIds.difference(activeCustomerIds);
@@ -306,8 +346,10 @@ Future<void> exportAnalysisToCSV({
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('✅ CSV has transferred!',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text(
+            '✅ CSV has transferred!',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -321,8 +363,9 @@ Future<void> exportAnalysisToCSV({
                 icon: const Icon(Icons.share),
                 label: const Text('Share'),
                 onPressed: () {
-                  Share.shareXFiles([XFile(filePath)],
-                      text: 'SmartConnect CSV Report - $monthLabel');
+                  Share.shareXFiles([
+                    XFile(filePath),
+                  ], text: 'SmartConnect CSV Report - $monthLabel');
                 },
               ),
             ],

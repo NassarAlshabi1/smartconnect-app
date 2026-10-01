@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_auth_service.dart';
+import 'package:smartconnect/local_database.dart';
 import 'package:smartconnect/metrics_card.dart';
 import 'package:smartconnect/voucher_management_screen.dart';
 import 'package:smartconnect/customer_management_screen.dart';
@@ -10,19 +10,22 @@ class AdminDashboardScreen extends StatelessWidget {
 
   void _logout(BuildContext context) async {
     try {
-      await FirebaseAuth.instance.signOut();
+      await AuthService.instance.signOut();
       Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('⚠️ Failed to logout: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('⚠️ Failed to logout: $e')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-    final userStream = FirebaseFirestore.instance.collection('users').doc(uid).snapshots();
+    final uid = AuthService.instance.currentUser!.uid;
+    final userStream = LocalDatabase.instance
+        .collection('users')
+        .doc(uid)
+        .snapshots();
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -51,7 +54,10 @@ class AdminDashboardScreen extends StatelessWidget {
           children: [
             const DrawerHeader(
               decoration: BoxDecoration(color: Colors.orange),
-              child: Text('Admin Menu', style: TextStyle(color: Colors.white, fontSize: 20)),
+              child: Text(
+                'Admin Menu',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
             ),
             _hoverTile(
               icon: Icons.dashboard,
@@ -66,7 +72,9 @@ class AdminDashboardScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const CustomerManagementScreen()),
+                  MaterialPageRoute(
+                    builder: (_) => const CustomerManagementScreen(),
+                  ),
                 );
               },
             ),
@@ -76,7 +84,9 @@ class AdminDashboardScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const VoucherManagementScreen()),
+                  MaterialPageRoute(
+                    builder: (_) => const VoucherManagementScreen(),
+                  ),
                 );
               },
             ),
@@ -86,10 +96,7 @@ class AdminDashboardScreen extends StatelessWidget {
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset(
-              'assets/images/admin_bg.jpg',
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset('assets/images/admin_bg.jpg', fit: BoxFit.cover),
           ),
           Container(color: Colors.black.withOpacity(0.4)),
           StreamBuilder<DocumentSnapshot>(
@@ -131,8 +138,10 @@ class AdminDashboardScreen extends StatelessWidget {
     final now = DateTime.now();
     final twoDaysLater = now.add(const Duration(days: 2));
 
-    final vouchersStream = FirebaseFirestore.instance.collection('vouchers').snapshots();
-    final usersStream = FirebaseFirestore.instance.collection('users').snapshots();
+    final vouchersStream = LocalDatabase.instance
+        .collection('vouchers')
+        .snapshots();
+    final usersStream = LocalDatabase.instance.collection('users').snapshots();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -143,7 +152,9 @@ class AdminDashboardScreen extends StatelessWidget {
             int totalCustomers = 0;
             if (snapshot.hasData) {
               final docs = snapshot.data!.docs;
-              totalCustomers = docs.where((d) => d['role'] == 'customer').length;
+              totalCustomers = docs
+                  .where((d) => d['role'] == 'customer')
+                  .length;
             }
 
             return _animatedCardRow([
@@ -166,10 +177,14 @@ class AdminDashboardScreen extends StatelessWidget {
 
             final docs = snapshot.data!.docs;
             final total = docs.length;
-            final assigned = docs.where((d) => d['status'] == 'assigned').length;
+            final assigned = docs
+                .where((d) => d['status'] == 'assigned')
+                .length;
             final expiringSoon = docs.where((d) {
               final expiry = (d['expiry'] as Timestamp?)?.toDate();
-              return expiry != null && expiry.isBefore(twoDaysLater) && expiry.isAfter(now);
+              return expiry != null &&
+                  expiry.isBefore(twoDaysLater) &&
+                  expiry.isAfter(now);
             }).length;
 
             return Column(

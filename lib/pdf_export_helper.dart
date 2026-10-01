@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
@@ -52,11 +52,17 @@ Future<void> exportPaymentsToPDF(
             pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Text('SmartConnect Internet Services Ltd',
-                    style: pw.TextStyle(
-                        fontSize: 16, fontWeight: pw.FontWeight.bold)),
-                pw.Text('Monthly Payments Report - $monthTitle',
-                    style: const pw.TextStyle(fontSize: 12)),
+                pw.Text(
+                  'SmartConnect Internet Services Ltd',
+                  style: pw.TextStyle(
+                    fontSize: 16,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+                pw.Text(
+                  'Monthly Payments Report - $monthTitle',
+                  style: const pw.TextStyle(fontSize: 12),
+                ),
               ],
             ),
           ],
@@ -85,8 +91,10 @@ Future<void> exportPaymentsToPDF(
         pw.Divider(),
         pw.Align(
           alignment: pw.Alignment.centerRight,
-          child: pw.Text('From UmemeSwahili Lab',
-              style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey)),
+          child: pw.Text(
+            'From UmemeSwahili Lab',
+            style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey),
+          ),
         ),
       ],
     ),
@@ -107,8 +115,10 @@ Future<void> exportPaymentsToPDF(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('✅ PDF imesafirishwa!',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text(
+            '✅ PDF imesafirishwa!',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -122,8 +132,9 @@ Future<void> exportPaymentsToPDF(
                 icon: const Icon(Icons.share),
                 label: const Text('Share'),
                 onPressed: () {
-                  Share.shareXFiles([XFile(path)],
-                      text: 'SmartConnect PDF Report - $monthTitle');
+                  Share.shareXFiles([
+                    XFile(path),
+                  ], text: 'SmartConnect PDF Report - $monthTitle');
                 },
               ),
             ],

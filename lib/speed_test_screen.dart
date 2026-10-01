@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 
 class ManageVoucherPackagesScreen extends StatefulWidget {
   const ManageVoucherPackagesScreen({super.key});
 
   @override
-  State<ManageVoucherPackagesScreen> createState() => _ManageVoucherPackagesScreenState();
+  State<ManageVoucherPackagesScreen> createState() =>
+      _ManageVoucherPackagesScreenState();
 }
 
-class _ManageVoucherPackagesScreenState extends State<ManageVoucherPackagesScreen> {
+class _ManageVoucherPackagesScreenState
+    extends State<ManageVoucherPackagesScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _priceController = TextEditingController();
@@ -18,7 +20,7 @@ class _ManageVoucherPackagesScreenState extends State<ManageVoucherPackagesScree
       final name = _nameController.text.trim();
       final price = int.parse(_priceController.text.trim());
 
-      await FirebaseFirestore.instance.collection('voucher_packages').add({
+      await LocalDatabase.instance.collection('voucher_packages').add({
         'name': name,
         'price': price,
         'created_at': Timestamp.now(),
@@ -30,7 +32,11 @@ class _ManageVoucherPackagesScreenState extends State<ManageVoucherPackagesScree
     }
   }
 
-  Future<void> _editPackage(String docId, String currentName, int currentPrice) async {
+  Future<void> _editPackage(
+    String docId,
+    String currentName,
+    int currentPrice,
+  ) async {
     _nameController.text = currentName;
     _priceController.text = currentPrice.toString();
 
@@ -46,31 +52,37 @@ class _ManageVoucherPackagesScreenState extends State<ManageVoucherPackagesScree
                 TextFormField(
                   controller: _nameController,
                   decoration: const InputDecoration(labelText: 'Package Name'),
-                  validator: (val) => val == null || val.trim().isEmpty ? 'Enter name' : null,
+                  validator: (val) =>
+                      val == null || val.trim().isEmpty ? 'Enter name' : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _priceController,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(labelText: 'Price (TZS)'),
-                  validator: (val) => val == null || int.tryParse(val) == null ? 'Enter valid price' : null,
+                  validator: (val) => val == null || int.tryParse(val) == null
+                      ? 'Enter valid price'
+                      : null,
                 ),
               ],
             ),
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () async {
               if (_formKey.currentState!.validate()) {
                 final newName = _nameController.text.trim();
                 final newPrice = int.parse(_priceController.text.trim());
 
-                await FirebaseFirestore.instance.collection('voucher_packages').doc(docId).update({
-                  'name': newName,
-                  'price': newPrice,
-                });
+                await LocalDatabase.instance
+                    .collection('voucher_packages')
+                    .doc(docId)
+                    .update({'name': newName, 'price': newPrice});
 
                 _nameController.clear();
                 _priceController.clear();
@@ -85,7 +97,10 @@ class _ManageVoucherPackagesScreenState extends State<ManageVoucherPackagesScree
   }
 
   Future<void> _deletePackage(String docId) async {
-    await FirebaseFirestore.instance.collection('voucher_packages').doc(docId).delete();
+    await LocalDatabase.instance
+        .collection('voucher_packages')
+        .doc(docId)
+        .delete();
   }
 
   void _showAddDialog() {
@@ -101,21 +116,27 @@ class _ManageVoucherPackagesScreenState extends State<ManageVoucherPackagesScree
                 TextFormField(
                   controller: _nameController,
                   decoration: const InputDecoration(labelText: 'Package Name'),
-                  validator: (val) => val == null || val.trim().isEmpty ? 'Enter name' : null,
+                  validator: (val) =>
+                      val == null || val.trim().isEmpty ? 'Enter name' : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _priceController,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(labelText: 'Price (TZS)'),
-                  validator: (val) => val == null || int.tryParse(val) == null ? 'Enter valid price' : null,
+                  validator: (val) => val == null || int.tryParse(val) == null
+                      ? 'Enter valid price'
+                      : null,
                 ),
               ],
             ),
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(onPressed: _addPackage, child: const Text('Add')),
         ],
       ),
@@ -139,7 +160,10 @@ class _ManageVoucherPackagesScreenState extends State<ManageVoucherPackagesScree
         ],
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('voucher_packages').orderBy('created_at').snapshots(),
+        stream: LocalDatabase.instance
+            .collection('voucher_packages')
+            .orderBy('created_at')
+            .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -166,7 +190,10 @@ class _ManageVoucherPackagesScreenState extends State<ManageVoucherPackagesScree
                 child: ListTile(
                   title: Text(
                     name,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
                   subtitle: Text(
                     'TZS $price',

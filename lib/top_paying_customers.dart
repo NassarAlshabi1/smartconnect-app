@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 
 class TopPayingCustomers extends StatelessWidget {
   final DateTime month;
@@ -60,30 +60,32 @@ class TopPayingCustomers extends StatelessWidget {
                 style: TextStyle(color: Colors.white70),
               )
             else
-              ...top5.map((entry) => Column(
-                    children: [
-                      ListTile(
-                        leading: const Icon(Icons.person, color: Colors.white70),
-                        title: Text(
-                          entry.key,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 15,
-                          ),
-                        ),
-                        trailing: Text(
-                          'TSh ${entry.value.toStringAsFixed(0)}',
-                          style: const TextStyle(
-                            color: Colors.tealAccent,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
+              ...top5.map(
+                (entry) => Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.person, color: Colors.white70),
+                      title: Text(
+                        entry.key,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15,
                         ),
                       ),
-                      const Divider(color: Colors.white12, thickness: 0.5),
-                    ],
-                  )),
+                      trailing: Text(
+                        'TSh ${entry.value.toStringAsFixed(0)}',
+                        style: const TextStyle(
+                          color: Colors.tealAccent,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                    const Divider(color: Colors.white12, thickness: 0.5),
+                  ],
+                ),
+              ),
           ],
         ),
       ),

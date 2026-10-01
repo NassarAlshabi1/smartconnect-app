@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 
 class InactiveCustomers extends StatelessWidget {
   final DateTime currentMonth;
@@ -15,7 +15,11 @@ class InactiveCustomers extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentStart = DateTime(currentMonth.year, currentMonth.month, 1);
     final currentEnd = DateTime(currentMonth.year, currentMonth.month + 1, 1);
-    final previousStart = DateTime(currentMonth.year, currentMonth.month - 1, 1);
+    final previousStart = DateTime(
+      currentMonth.year,
+      currentMonth.month - 1,
+      1,
+    );
     final previousEnd = DateTime(currentMonth.year, currentMonth.month, 1);
 
     final previousCustomers = <String, String>{};
@@ -45,10 +49,11 @@ class InactiveCustomers extends StatelessWidget {
       }
     }
 
-    final inactive = previousCustomers.entries
-        .where((entry) => !currentCustomerIds.contains(entry.key))
-        .toList()
-      ..sort((a, b) => a.value.compareTo(b.value));
+    final inactive =
+        previousCustomers.entries
+            .where((entry) => !currentCustomerIds.contains(entry.key))
+            .toList()
+          ..sort((a, b) => a.value.compareTo(b.value));
 
     return Card(
       color: Colors.orange.withOpacity(0.1),
@@ -75,11 +80,19 @@ class InactiveCustomers extends StatelessWidget {
                 style: TextStyle(color: Colors.greenAccent),
               )
             else
-              ...inactive.map((entry) => ListTile(
-                    leading: const Icon(Icons.person_off, color: Colors.white70),
-                    title: Text(entry.value, style: const TextStyle(color: Colors.white)),
-                    subtitle: Text('ID: ${entry.key}', style: const TextStyle(color: Colors.white54)),
-                  )),
+              ...inactive.map(
+                (entry) => ListTile(
+                  leading: const Icon(Icons.person_off, color: Colors.white70),
+                  title: Text(
+                    entry.value,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  subtitle: Text(
+                    'ID: ${entry.key}',
+                    style: const TextStyle(color: Colors.white54),
+                  ),
+                ),
+              ),
           ],
         ),
       ),

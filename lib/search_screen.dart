@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -22,7 +22,7 @@ class _SearchScreenState extends State<SearchScreen> {
     });
 
     try {
-      final snapshot = await FirebaseFirestore.instance
+      final snapshot = await LocalDatabase.instance
           .collection('vouchers')
           .where('network', isEqualTo: _searchTerm.trim())
           .where('status', isEqualTo: 'available')
@@ -34,9 +34,9 @@ class _SearchScreenState extends State<SearchScreen> {
       });
     } catch (e) {
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('⚠️ Imeshindikana kutafuta: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('⚠️ Imeshindikana kutafuta: $e')));
     }
   }
 
@@ -56,7 +56,9 @@ class _SearchScreenState extends State<SearchScreen> {
                 hintText: 'Andika jina la mtandao (mfano: Vodacom)',
                 filled: true,
                 fillColor: Colors.white,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.search),
                   onPressed: _performSearch,
@@ -72,63 +74,74 @@ class _SearchScreenState extends State<SearchScreen> {
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _results.isEmpty
-                      ? const Center(child: Text('🔍 Hakuna vocha zilizopatikana'))
-                      : ListView.builder(
-                          itemCount: _results.length,
-                          itemBuilder: (context, index) {
-                            final doc = _results[index];
-                            return Card(
-                              elevation: 4,
-                              margin: const EdgeInsets.symmetric(vertical: 8),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                  ? const Center(child: Text('🔍 Hakuna vocha zilizopatikana'))
+                  : ListView.builder(
+                      itemCount: _results.length,
+                      itemBuilder: (context, index) {
+                        final doc = _results[index];
+                        return Card(
+                          elevation: 4,
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
                                   children: [
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.sim_card, color: Colors.teal),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          'Code: ${doc['code']}',
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
+                                    const Icon(
+                                      Icons.sim_card,
+                                      color: Colors.teal,
                                     ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.network_cell, size: 18, color: Colors.grey),
-                                        const SizedBox(width: 6),
-                                        Text(
-                                          'Network: ${doc['network']}',
-                                          style: const TextStyle(fontSize: 14),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.local_offer, size: 18, color: Colors.grey),
-                                        const SizedBox(width: 6),
-                                        Text(
-                                          'Package: ${doc['package']}',
-                                          style: const TextStyle(fontSize: 14),
-                                        ),
-                                      ],
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Code: ${doc['code']}',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ],
                                 ),
-                              ),
-                            );
-                          },
-                        ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.network_cell,
+                                      size: 18,
+                                      color: Colors.grey,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'Network: ${doc['network']}',
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.local_offer,
+                                      size: 18,
+                                      color: Colors.grey,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'Package: ${doc['package']}',
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
             ),
           ],
         ),

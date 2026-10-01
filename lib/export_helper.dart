@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:open_file/open_file.dart';
 
@@ -52,8 +52,10 @@ Future<void> exportPaymentsToCSV(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('✅ CSV imesafirishwa!',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text(
+            '✅ CSV imesafirishwa!',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -67,8 +69,9 @@ Future<void> exportPaymentsToCSV(
                 icon: const Icon(Icons.share),
                 label: const Text('Share'),
                 onPressed: () {
-                  Share.shareXFiles([XFile(path)],
-                      text: 'SmartConnect CSV Report - $monthTitle');
+                  Share.shareXFiles([
+                    XFile(path),
+                  ], text: 'SmartConnect CSV Report - $monthTitle');
                 },
               ),
             ],

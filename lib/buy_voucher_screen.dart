@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 import 'package:shimmer/shimmer.dart';
 
 class BuyVoucherScreen extends StatefulWidget {
@@ -30,17 +30,21 @@ class _BuyVoucherScreenState extends State<BuyVoucherScreen> {
 
   Future<void> _loadNetworkOptions() async {
     try {
-      final snapshot = await FirebaseFirestore.instance.collection('networks').get();
-      final networks = snapshot.docs.map((doc) => doc['name'].toString()).toList();
+      final snapshot = await LocalDatabase.instance
+          .collection('networks')
+          .get();
+      final networks = snapshot.docs
+          .map((doc) => doc['name'].toString())
+          .toList();
       setState(() {
         networkOptions = networks;
         isLoadingNetworks = false;
       });
     } catch (e) {
       setState(() => isLoadingNetworks = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('⚠️ Failed to load networks: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('⚠️ Failed to load networks: $e')));
     }
   }
 
@@ -53,14 +57,14 @@ class _BuyVoucherScreenState extends State<BuyVoucherScreen> {
     });
 
     try {
-      final snapshot = await FirebaseFirestore.instance
+      final snapshot = await LocalDatabase.instance
           .collection('network_packages')
           .where('network', isEqualTo: network)
           .limit(1)
           .get();
 
       if (snapshot.docs.isNotEmpty) {
-        final data = snapshot.docs.first.data();
+        final data = snapshot.docs.first.data()!;
         final packages = List<String>.from(data['packages']);
         setState(() {
           assignedPackages = packages;
@@ -83,14 +87,16 @@ class _BuyVoucherScreenState extends State<BuyVoucherScreen> {
     });
 
     try {
-      final snapshot = await FirebaseFirestore.instance
+      final snapshot = await LocalDatabase.instance
           .collection('voucher_packages')
           .where('name', isEqualTo: packageName)
           .limit(1)
           .get();
 
       if (snapshot.docs.isNotEmpty) {
-        final price = int.parse(snapshot.docs.first['price'].toString());
+        final price = int.parse(
+          snapshot.docs.first.data()!['price'].toString(),
+        );
         setState(() {
           selectedPrice = price;
         });
@@ -99,9 +105,9 @@ class _BuyVoucherScreenState extends State<BuyVoucherScreen> {
       setState(() => isLoadingPrice = false);
     } catch (e) {
       setState(() => isLoadingPrice = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('⚠️ Failed to load price: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('⚠️ Failed to load price: $e')));
     }
   }
 
@@ -153,9 +159,14 @@ class _BuyVoucherScreenState extends State<BuyVoucherScreen> {
                   ? _buildShimmerDropdown(label: 'Select Network')
                   : DropdownButtonFormField<String>(
                       value: selectedNetwork,
-                      decoration: const InputDecoration(labelText: 'Select Network'),
+                      decoration: const InputDecoration(
+                        labelText: 'Select Network',
+                      ),
                       items: networkOptions.map((network) {
-                        return DropdownMenuItem(value: network, child: Text(network));
+                        return DropdownMenuItem(
+                          value: network,
+                          child: Text(network),
+                        );
                       }).toList(),
                       onChanged: (val) {
                         setState(() {
@@ -165,14 +176,17 @@ class _BuyVoucherScreenState extends State<BuyVoucherScreen> {
                         });
                         if (val != null) _loadAssignedPackages(val);
                       },
-                      validator: (val) => val == null ? 'Please select a network' : null,
+                      validator: (val) =>
+                          val == null ? 'Please select a network' : null,
                     ),
               const SizedBox(height: 20),
               isLoadingPackages
                   ? _buildShimmerDropdown(label: 'Select Package')
                   : DropdownButtonFormField<String>(
                       value: selectedPackage,
-                      decoration: const InputDecoration(labelText: 'Select Package'),
+                      decoration: const InputDecoration(
+                        labelText: 'Select Package',
+                      ),
                       items: assignedPackages.map((pkg) {
                         return DropdownMenuItem(value: pkg, child: Text(pkg));
                       }).toList(),
@@ -183,7 +197,8 @@ class _BuyVoucherScreenState extends State<BuyVoucherScreen> {
                         });
                         if (val != null) _loadPackagePrice(val);
                       },
-                      validator: (val) => val == null ? 'Please select a package' : null,
+                      validator: (val) =>
+                          val == null ? 'Please select a package' : null,
                     ),
               const SizedBox(height: 20),
               if (isLoadingPrice)
@@ -191,7 +206,10 @@ class _BuyVoucherScreenState extends State<BuyVoucherScreen> {
               else if (selectedPrice != null)
                 Text(
                   'Price: TZS $selectedPrice',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               const Spacer(),
               SizedBox(
@@ -202,7 +220,10 @@ class _BuyVoucherScreenState extends State<BuyVoucherScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepPurple,
                   ),
-                  child: const Text('Buy Now', style: TextStyle(color: Colors.white)),
+                  child: const Text(
+                    'Buy Now',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
             ],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_auth_service.dart';
+import 'package:smartconnect/local_database.dart';
 import 'booking_status_service.dart';
 
 class SuccessScreen extends StatefulWidget {
@@ -42,14 +42,16 @@ class _SuccessScreenState extends State<SuccessScreen> {
     const maxAttempts = 12;
 
     while (attempts < maxAttempts && mounted) {
-      final status = await BookingStatusService.checkStatus(widget.orderTrackingId);
+      final status = await BookingStatusService.checkStatus(
+        widget.orderTrackingId,
+      );
       print("🔍 Status check: $status");
       setState(() {
         _status = status;
       });
 
       if (status == "COMPLETED") {
-        final snapshot = await FirebaseFirestore.instance
+        final snapshot = await LocalDatabase.instance
             .collection('transactions')
             .doc(widget.orderTrackingId)
             .get();
@@ -64,7 +66,9 @@ class _SuccessScreenState extends State<SuccessScreen> {
           });
           return;
         } else {
-          print("🕓 Payment completed but voucher not yet assigned. Retrying...");
+          print(
+            "🕓 Payment completed but voucher not yet assigned. Retrying...",
+          );
         }
       } else if (status == "FAIL" || status == "ERROR") {
         setState(() {
@@ -84,7 +88,9 @@ class _SuccessScreenState extends State<SuccessScreen> {
   }
 
   Future<void> _fetchDetails() async {
-    final details = await BookingStatusService.fetchDetails(widget.orderTrackingId);
+    final details = await BookingStatusService.fetchDetails(
+      widget.orderTrackingId,
+    );
     if (details.isNotEmpty) {
       setState(() {
         _transid = details['transid'];
@@ -92,14 +98,16 @@ class _SuccessScreenState extends State<SuccessScreen> {
         _msisdn = details['msisdn'];
         _reference = details['reference'];
         _voucherCode = details['assigned_voucher'] ?? details['transid'];
-        _expiry = details['assigned_at'] ?? DateTime.now().add(const Duration(days: 1));
+        _expiry =
+            details['assigned_at'] ??
+            DateTime.now().add(const Duration(days: 1));
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final uid = AuthService.instance.currentUser?.uid;
 
     if (uid == null) {
       return const Scaffold(
@@ -113,7 +121,10 @@ class _SuccessScreenState extends State<SuccessScreen> {
         backgroundColor: const Color(0xFF512DA8),
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text('Payment Status', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Payment Status',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -125,12 +136,15 @@ class _SuccessScreenState extends State<SuccessScreen> {
                     children: const [
                       CircularProgressIndicator(color: Colors.deepPurple),
                       SizedBox(height: 20),
-                      Text('⏳ Tunakagua malipo yako...', style: TextStyle(fontSize: 16)),
+                      Text(
+                        '⏳ Tunakagua malipo yako...',
+                        style: TextStyle(fontSize: 16),
+                      ),
                     ],
                   )
                 : _status == "COMPLETED"
-                    ? _buildSuccessContent()
-                    : _buildFailureOrPending(),
+                ? _buildSuccessContent()
+                : _buildFailureOrPending(),
           ),
         ),
       ),
@@ -176,13 +190,19 @@ class _SuccessScreenState extends State<SuccessScreen> {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
+            onPressed: () =>
+                Navigator.of(context).popUntil((route) => route.isFirst),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.deepPurple,
               padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
-            child: const Text('Done', style: TextStyle(color: Colors.white, fontSize: 16)),
+            child: const Text(
+              'Done',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
           ),
         ),
       ],
@@ -193,12 +213,24 @@ class _SuccessScreenState extends State<SuccessScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('📦 Taarifa za Malipo:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        const Text(
+          '📦 Taarifa za Malipo:',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 12),
-        Text('Network: ${widget.network}', style: const TextStyle(fontSize: 15)),
-        Text('Package: ${widget.package}', style: const TextStyle(fontSize: 15)),
+        Text(
+          'Network: ${widget.network}',
+          style: const TextStyle(fontSize: 15),
+        ),
+        Text(
+          'Package: ${widget.package}',
+          style: const TextStyle(fontSize: 15),
+        ),
         if (_expiry != null)
-          Text('Expires: ${_expiry!.toLocal().toString().split('.').first}', style: const TextStyle(fontSize: 15)),
+          Text(
+            'Expires: ${_expiry!.toLocal().toString().split('.').first}',
+            style: const TextStyle(fontSize: 15),
+          ),
         if (_channel != null)
           Text('Paid via: $_channel', style: const TextStyle(fontSize: 15)),
         if (_msisdn != null)
@@ -206,7 +238,10 @@ class _SuccessScreenState extends State<SuccessScreen> {
         if (_reference != null)
           Text('Reference: $_reference', style: const TextStyle(fontSize: 15)),
         if (_transid != null)
-          Text('Transaction ID: $_transid', style: const TextStyle(fontSize: 15)),
+          Text(
+            'Transaction ID: $_transid',
+            style: const TextStyle(fontSize: 15),
+          ),
       ],
     );
   }
@@ -223,13 +258,18 @@ class _SuccessScreenState extends State<SuccessScreen> {
         ),
         const SizedBox(height: 20),
         Text(
-          isFail ? '⚠️ Malipo hayakufanikiwa.' : '⌛ Malipo yako yanashughulikiwa...',
+          isFail
+              ? '⚠️ Malipo hayakufanikiwa.'
+              : '⌛ Malipo yako yanashughulikiwa...',
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 16),
         if (!isFail)
-          const Text('Please wait or try again later.', textAlign: TextAlign.center),
+          const Text(
+            'Please wait or try again later.',
+            textAlign: TextAlign.center,
+          ),
         const SizedBox(height: 30),
         ElevatedButton(
           onPressed: () => Navigator.of(context).pop(),

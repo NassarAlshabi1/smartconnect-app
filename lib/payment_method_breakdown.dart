@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class PaymentMethodBreakdown extends StatelessWidget {
@@ -69,7 +69,8 @@ class PaymentMethodBreakdown extends StatelessWidget {
               child: PieChart(
                 PieChartData(
                   sections: channelCounts.entries.mapIndexed((index, entry) {
-                    final percentage = (entry.value / total * 100).toStringAsFixed(1);
+                    final percentage = (entry.value / total * 100)
+                        .toStringAsFixed(1);
                     return PieChartSectionData(
                       color: colors[index % colors.length],
                       value: entry.value.toDouble(),

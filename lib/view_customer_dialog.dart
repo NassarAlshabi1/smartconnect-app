@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 import 'package:intl/intl.dart';
 import 'package:smartconnect/assign_voucher_to_customer_dialog.dart';
 
@@ -15,8 +15,9 @@ class ViewCustomerDialog extends StatelessWidget {
     final name = data['full_name'] ?? 'Unknown';
     final phone = data['phone_number'] ?? 'N/A';
     final joined = (data['created_at'] as Timestamp?)?.toDate();
-    final joinedFormatted =
-        joined != null ? DateFormat('yyyy-MM-dd – kk:mm').format(joined) : 'N/A';
+    final joinedFormatted = joined != null
+        ? DateFormat('yyyy-MM-dd – kk:mm').format(joined)
+        : 'N/A';
     final status = (data['status'] ?? 'active').toString();
 
     return AlertDialog(
@@ -83,10 +84,9 @@ class ViewCustomerDialog extends StatelessWidget {
           ),
           onPressed: () async {
             final newStatus = status == 'active' ? 'inactive' : 'active';
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(uid)
-                .update({'status': newStatus});
+            await LocalDatabase.instance.collection('users').doc(uid).update({
+              'status': newStatus,
+            });
             Navigator.pop(context);
           },
           icon: Icon(status == 'active' ? Icons.block : Icons.check_circle),
@@ -122,7 +122,7 @@ class ViewVoucherHistoryDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final vouchersRef = FirebaseFirestore.instance
+    final vouchersRef = LocalDatabase.instance
         .collection('vouchers')
         .where('assigned_to.uid', isEqualTo: customerUid);
 
@@ -134,7 +134,9 @@ class ViewVoucherHistoryDialog extends StatelessWidget {
           stream: vouchersRef.snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+              return const Center(
+                child: CircularProgressIndicator(strokeWidth: 2),
+              );
             }
 
             final docs = snapshot.data!.docs;
@@ -171,7 +173,10 @@ class ViewVoucherHistoryDialog extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Code: $code', style: const TextStyle(fontWeight: FontWeight.bold)),
+                        Text(
+                          'Code: $code',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         Text('Package: $pkg'),
                         Text('Network: $net'),
                         Text('Status: $status'),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:smartconnect/local_database.dart';
+import 'package:smartconnect/local_auth_service.dart';
 import 'package:intl/intl.dart';
 
 class CustomerNotificationScreen extends StatelessWidget {
@@ -8,8 +8,8 @@ class CustomerNotificationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-    final notificationsRef = FirebaseFirestore.instance
+    final uid = AuthService.instance.currentUser!.uid;
+    final notificationsRef = LocalDatabase.instance
         .collection('users')
         .doc(uid)
         .collection('notifications')
@@ -40,9 +40,12 @@ class CustomerNotificationScreen extends StatelessWidget {
               final doc = docs[index];
               final data = doc.data() as Map<String, dynamic>;
 
-              final timestamp = (data['sent_at'] ?? data['timestamp']) as Timestamp?;
+              final timestamp =
+                  (data['sent_at'] ?? data['timestamp']) as Timestamp?;
               final formattedDate = timestamp != null
-                  ? DateFormat('dd MMM yyyy, hh:mm a').format(timestamp.toDate())
+                  ? DateFormat(
+                      'dd MMM yyyy, hh:mm a',
+                    ).format(timestamp.toDate())
                   : 'Unknown time';
 
               final isUnread = data['status'] == 'unread';
@@ -54,20 +57,28 @@ class CustomerNotificationScreen extends StatelessWidget {
                       await doc.reference.update({'status': 'read'});
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('⚠️ Failed to mark as read: $e')),
+                        SnackBar(
+                          content: Text('⚠️ Failed to mark as read: $e'),
+                        ),
                       );
                     }
                   }
                 },
                 child: Card(
                   elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: ListTile(
                       leading: Stack(
                         children: [
-                          const Icon(Icons.notifications, color: Colors.deepPurple, size: 28),
+                          const Icon(
+                            Icons.notifications,
+                            color: Colors.deepPurple,
+                            size: 28,
+                          ),
                           if (isUnread)
                             Positioned(
                               right: -2,
@@ -86,12 +97,17 @@ class CustomerNotificationScreen extends StatelessWidget {
                       title: Text(
                         data['message'] ?? 'No message',
                         style: TextStyle(
-                          fontWeight: isUnread ? FontWeight.bold : FontWeight.normal,
+                          fontWeight: isUnread
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                         ),
                       ),
                       subtitle: Text(
                         formattedDate,
-                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
                       ),
                       trailing: Text(
                         isUnread ? 'Unread' : 'Read',

@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -11,7 +11,7 @@ class PaymentsGraph extends StatelessWidget {
     final start = DateTime(selectedMonth.year, selectedMonth.month, 1);
     final end = DateTime(selectedMonth.year, selectedMonth.month + 1, 1);
 
-    final query = await FirebaseFirestore.instance
+    final query = await LocalDatabase.instance
         .collection('transactions')
         .where('status', isEqualTo: 'COMPLETED')
         .where('created_at', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
@@ -78,7 +78,7 @@ class PaymentsGraph extends StatelessWidget {
                 color: Colors.tealAccent,
                 width: 14,
                 borderRadius: BorderRadius.circular(4),
-              )
+              ),
             ],
           );
         }).toList();
@@ -87,7 +87,9 @@ class PaymentsGraph extends StatelessWidget {
           aspectRatio: 1.6,
           child: Card(
             elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             color: const Color(0xFF002A4A),
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -97,7 +99,10 @@ class PaymentsGraph extends StatelessWidget {
                   backgroundColor: Colors.transparent,
                   titlesData: FlTitlesData(
                     leftTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: true, reservedSize: 42),
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 42,
+                      ),
                     ),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
@@ -108,7 +113,10 @@ class PaymentsGraph extends StatelessWidget {
                             padding: const EdgeInsets.only(top: 4),
                             child: Text(
                               label,
-                              style: const TextStyle(color: Colors.white70, fontSize: 10),
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 10,
+                              ),
                             ),
                           );
                         },

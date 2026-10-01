@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 import 'package:intl/intl.dart';
 
 class UsageHistoryScreen extends StatelessWidget {
@@ -9,7 +9,7 @@ class UsageHistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final usageRef = FirebaseFirestore.instance
+    final usageRef = LocalDatabase.instance
         .collection('users')
         .doc(userId)
         .collection('usageHistory')
@@ -23,11 +23,13 @@ class UsageHistoryScreen extends StatelessWidget {
       body: StreamBuilder<QuerySnapshot>(
         stream: usageRef.snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+          if (!snapshot.hasData)
+            return const Center(child: CircularProgressIndicator());
 
           final docs = snapshot.data!.docs;
 
-          if (docs.isEmpty) return const Center(child: Text('No usage history found.'));
+          if (docs.isEmpty)
+            return const Center(child: Text('No usage history found.'));
 
           return ListView.builder(
             padding: const EdgeInsets.all(12),
@@ -41,7 +43,9 @@ class UsageHistoryScreen extends StatelessWidget {
 
               return Card(
                 elevation: 2,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: ListTile(
                   leading: Icon(Icons.history, color: Colors.deepPurple),
                   title: Text(data['type'] ?? 'Unknown'),
@@ -50,13 +54,20 @@ class UsageHistoryScreen extends StatelessWidget {
                     children: [
                       Text(data['description'] ?? ''),
                       const SizedBox(height: 4),
-                      Text('$formattedDate • ${data['channel'] ?? 'Unknown'}',
-                          style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                      Text(
+                        '$formattedDate • ${data['channel'] ?? 'Unknown'}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
                     ],
                   ),
                   trailing: Chip(
-                    label: Text(data['status'] ?? 'Pending',
-                        style: const TextStyle(color: Colors.white)),
+                    label: Text(
+                      data['status'] ?? 'Pending',
+                      style: const TextStyle(color: Colors.white),
+                    ),
                     backgroundColor: _statusColor(data['status']),
                   ),
                 ),

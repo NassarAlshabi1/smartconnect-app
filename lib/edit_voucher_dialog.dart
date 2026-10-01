@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 
 class EditVoucherDialog extends StatefulWidget {
   final DocumentSnapshot document;
@@ -37,7 +37,9 @@ class _EditVoucherDialogState extends State<EditVoucherDialog> {
 
   Future<void> _loadNetworkOptions() async {
     try {
-      final snapshot = await FirebaseFirestore.instance.collection('networks').get();
+      final snapshot = await LocalDatabase.instance
+          .collection('networks')
+          .get();
       final names = snapshot.docs.map((doc) => doc['name'].toString()).toList();
 
       if (selectedNetwork != null && !names.contains(selectedNetwork)) {
@@ -50,15 +52,17 @@ class _EditVoucherDialogState extends State<EditVoucherDialog> {
       });
     } catch (e) {
       setState(() => isLoadingNetworks = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('⚠️ Failed to load networks: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('⚠️ Failed to load networks: $e')));
     }
   }
 
   Future<void> _loadPackageOptions() async {
     try {
-      final snapshot = await FirebaseFirestore.instance.collection('voucher_packages').get();
+      final snapshot = await LocalDatabase.instance
+          .collection('voucher_packages')
+          .get();
       final names = snapshot.docs.map((doc) => doc['name'].toString()).toList();
 
       if (selectedPackage != null && !names.contains(selectedPackage)) {
@@ -71,9 +75,9 @@ class _EditVoucherDialogState extends State<EditVoucherDialog> {
       });
     } catch (e) {
       setState(() => isLoadingPackages = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('⚠️ Failed to load packages: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('⚠️ Failed to load packages: $e')));
     }
   }
 
@@ -96,7 +100,10 @@ class _EditVoucherDialogState extends State<EditVoucherDialog> {
     return AlertDialog(
       title: const Text('Edit Voucher'),
       content: isLoading
-          ? const SizedBox(height: 100, child: Center(child: CircularProgressIndicator()))
+          ? const SizedBox(
+              height: 100,
+              child: Center(child: CircularProgressIndicator()),
+            )
           : SingleChildScrollView(
               child: Form(
                 key: _formKey,
@@ -104,16 +111,24 @@ class _EditVoucherDialogState extends State<EditVoucherDialog> {
                   children: [
                     TextFormField(
                       controller: _codeController,
-                      decoration: const InputDecoration(labelText: 'Voucher Code'),
-                      validator: (val) =>
-                          val == null || val.trim().isEmpty ? 'Enter code' : null,
+                      decoration: const InputDecoration(
+                        labelText: 'Voucher Code',
+                      ),
+                      validator: (val) => val == null || val.trim().isEmpty
+                          ? 'Enter code'
+                          : null,
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
                       value: selectedNetwork,
-                      decoration: const InputDecoration(labelText: 'Network Name'),
+                      decoration: const InputDecoration(
+                        labelText: 'Network Name',
+                      ),
                       items: networkOptions.map((network) {
-                        return DropdownMenuItem(value: network, child: Text(network));
+                        return DropdownMenuItem(
+                          value: network,
+                          child: Text(network),
+                        );
                       }).toList(),
                       onChanged: (val) => setState(() => selectedNetwork = val),
                       validator: (val) => val == null ? 'Choose network' : null,
@@ -143,8 +158,12 @@ class _EditVoucherDialogState extends State<EditVoucherDialog> {
                             final picked = await showDatePicker(
                               context: context,
                               initialDate: expiryDate ?? DateTime.now(),
-                              firstDate: DateTime.now().subtract(const Duration(days: 1)),
-                              lastDate: DateTime.now().add(const Duration(days: 365)),
+                              firstDate: DateTime.now().subtract(
+                                const Duration(days: 1),
+                              ),
+                              lastDate: DateTime.now().add(
+                                const Duration(days: 365),
+                              ),
                             );
                             if (picked != null) {
                               setState(() => expiryDate = picked);
@@ -159,7 +178,10 @@ class _EditVoucherDialogState extends State<EditVoucherDialog> {
               ),
             ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
         ElevatedButton(onPressed: _updateVoucher, child: const Text('Update')),
       ],
     );

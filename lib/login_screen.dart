@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_auth_service.dart';
+import 'package:smartconnect/local_database.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,87 +16,26 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
 
   void _handleLogin() async {
-    final phone = _usernameController.text.trim();
-    final password = _passwordController.text.trim();
-
-    if (phone.isEmpty || password.isEmpty) {
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text;
+    if (username.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter all fields')),
+        const SnackBar(content: Text('Please enter username and password')),
       );
       return;
     }
-
-    if (!RegExp(r'^0\d{9}$').hasMatch(phone)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter a valid Tanzanian phone number')),
-      );
-      return;
-    }
-
     setState(() => _isLoading = true);
-
     try {
-      final sanitizedPhone = phone.replaceAll(RegExp(r'\D'), '');
-      final email = '$sanitizedPhone@smartconnect.tz';
-
-      final userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
-
-      final uid = userCredential.user!.uid;
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
-
-      if (!doc.exists) {
-        throw Exception('User data not found');
-      }
-
-      final data = doc.data()!;
-      final isActive = data['is_active'] == true;
-      final status = data['status']?.toString().toLowerCase() ?? 'active';
-      final role = data['role']?.toString().toLowerCase() ?? 'customer';
-
-      if (!isActive || status == 'inactive') {
-        await FirebaseAuth.instance.signOut();
+      await AuthService.instance.signIn(username, password);
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, '/admin');
+    } on AuthException {
+      if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('🚫 Akaunti yako imezimwa. Tafadhali wasiliana na admin.'),
-          ),
+          const SnackBar(content: Text('Invalid username or password')),
         );
-        return;
-      }
-
-      if (role == 'admin') {
-        Navigator.pushReplacementNamed(context, '/admin');
-      } else if (role == 'customer') {
-        Navigator.pushReplacementNamed(context, '/customer');
-      } else {
-        await FirebaseAuth.instance.signOut();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('⚠️ Role haijafafanuliwa vizuri. Tafadhali wasiliana na admin.'),
-          ),
-        );
-      }
-    } on FirebaseAuthException catch (e) {
-      String message = 'Login failed';
-      if (e.code == 'user-not-found') {
-        message = 'Account not found';
-      } else if (e.code == 'wrong-password') {
-        message = 'Incorrect password';
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
-    } catch (e) {
-      print('Login error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Unexpected error: ${e.toString()}')),
-      );
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -135,10 +74,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       TextField(
                         controller: _usernameController,
-                        keyboardType: TextInputType.phone,
+                        keyboardType: TextInputType.text,
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Icons.person),
-                          labelText: 'Phone Number',
+                          labelText: 'Username',
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -152,7 +91,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           border: const OutlineInputBorder(),
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                              _obscurePassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
                             ),
                             onPressed: () {
                               setState(() {

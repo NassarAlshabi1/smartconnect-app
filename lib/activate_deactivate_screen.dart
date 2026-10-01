@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 
 class ActivateDeactivateScreen extends StatefulWidget {
   const ActivateDeactivateScreen({super.key});
 
   @override
-  State<ActivateDeactivateScreen> createState() => _ActivateDeactivateScreenState();
+  State<ActivateDeactivateScreen> createState() =>
+      _ActivateDeactivateScreenState();
 }
 
 class _ActivateDeactivateScreenState extends State<ActivateDeactivateScreen>
@@ -88,7 +89,7 @@ class _ActivateDeactivateScreenState extends State<ActivateDeactivateScreen>
           ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
+              stream: LocalDatabase.instance
                   .collection('users')
                   .orderBy('full_name')
                   .snapshots(),
@@ -99,7 +100,9 @@ class _ActivateDeactivateScreenState extends State<ActivateDeactivateScreen>
 
                 final allDocs = snapshot.data!.docs.where((doc) {
                   final data = doc.data() as Map<String, dynamic>;
-                  final name = (data['full_name'] ?? '').toString().toLowerCase();
+                  final name = (data['full_name'] ?? '')
+                      .toString()
+                      .toLowerCase();
                   final isAdmin = data['is_admin'] == true;
                   return name.contains(_searchQuery) &&
                       (!_showAdminsOnly || isAdmin);
@@ -146,7 +149,10 @@ class _ActivateDeactivateScreenState extends State<ActivateDeactivateScreen>
                           color: isActive
                               ? Colors.green.withOpacity(0.1)
                               : Colors.red.withOpacity(0.1),
-                          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 6,
+                          ),
                           child: ListTile(
                             leading: Icon(
                               isActive ? Icons.check_circle : Icons.cancel,
@@ -168,9 +174,13 @@ class _ActivateDeactivateScreenState extends State<ActivateDeactivateScreen>
                                   const Padding(
                                     padding: EdgeInsets.only(left: 8),
                                     child: Chip(
-                                      label: Text('Admin',
-                                          style: TextStyle(
-                                              fontSize: 10, color: Colors.white)),
+                                      label: Text(
+                                        'Admin',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.white,
+                                        ),
+                                      ),
                                       backgroundColor: Colors.orange,
                                     ),
                                   ),
@@ -187,17 +197,20 @@ class _ActivateDeactivateScreenState extends State<ActivateDeactivateScreen>
                                   value: isActive,
                                   activeColor: Colors.greenAccent,
                                   onChanged: (value) {
-                                    FirebaseFirestore.instance
+                                    LocalDatabase.instance
                                         .collection('users')
                                         .doc(doc.id)
                                         .update({'is_active': value});
                                   },
                                 ),
                                 PopupMenuButton<String>(
-                                  icon: const Icon(Icons.more_vert, color: Colors.white),
+                                  icon: const Icon(
+                                    Icons.more_vert,
+                                    color: Colors.white,
+                                  ),
                                   onSelected: (value) {
                                     if (value == 'make_admin') {
-                                      FirebaseFirestore.instance
+                                      LocalDatabase.instance
                                           .collection('users')
                                           .doc(doc.id)
                                           .update({
@@ -205,7 +218,7 @@ class _ActivateDeactivateScreenState extends State<ActivateDeactivateScreen>
                                             'role': 'admin',
                                           });
                                     } else if (value == 'remove_admin') {
-                                      FirebaseFirestore.instance
+                                      LocalDatabase.instance
                                           .collection('users')
                                           .doc(doc.id)
                                           .update({
@@ -217,12 +230,14 @@ class _ActivateDeactivateScreenState extends State<ActivateDeactivateScreen>
                                   itemBuilder: (context) => [
                                     if (!isAdmin)
                                       const PopupMenuItem(
-                                          value: 'make_admin',
-                                          child: Text('Make Admin')),
+                                        value: 'make_admin',
+                                        child: Text('Make Admin'),
+                                      ),
                                     if (isAdmin)
                                       const PopupMenuItem(
-                                          value: 'remove_admin',
-                                          child: Text('Remove Admin')),
+                                        value: 'remove_admin',
+                                        child: Text('Remove Admin'),
+                                      ),
                                   ],
                                 ),
                               ],

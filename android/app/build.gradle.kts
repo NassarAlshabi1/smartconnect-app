@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.hussein.smartconnect"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -20,7 +20,7 @@ android {
 
     defaultConfig {
         applicationId = "com.hussein.smartconnect"
-        minSdk = 21
+        minSdk = flutter.minSdkVersion
         targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -48,4 +48,3 @@ flutter {
     source = "../.."
 }
 
-apply(plugin = "com.google.gms.google-services")

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -25,16 +25,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final snapshot = await FirebaseFirestore.instance
+      final snapshot = await LocalDatabase.instance
           .collection('users')
           .where('phone_number', isEqualTo: phone)
           .limit(1)
           .get();
 
       if (snapshot.docs.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Account not found')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Account not found')));
         setState(() => _isLoading = false);
         return;
       }
@@ -42,14 +42,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       final userDoc = snapshot.docs.first;
       final uid = userDoc.id;
 
-      Navigator.pushNamed(context, '/reset-password', arguments: {
-        'uid': uid,
-        'phone': phone,
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Something went wrong: $e')),
+      Navigator.pushNamed(
+        context,
+        '/reset-password',
+        arguments: {'uid': uid, 'phone': phone},
       );
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Something went wrong: $e')));
     } finally {
       setState(() => _isLoading = false);
     }

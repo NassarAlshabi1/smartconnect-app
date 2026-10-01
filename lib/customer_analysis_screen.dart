@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 import 'package:intl/intl.dart';
 import 'top_paying_customers.dart';
 import 'most_frequent_payers.dart';
@@ -31,7 +31,8 @@ class _CustomerAnalysisScreenState extends State<CustomerAnalysisScreen> {
       final status = doc['status']?.toString().toUpperCase();
       if (raw is! Timestamp || status != 'COMPLETED') return false;
       final date = raw.toDate();
-      return date.month == selectedMonth.month && date.year == selectedMonth.year;
+      return date.month == selectedMonth.month &&
+          date.year == selectedMonth.year;
     }).toList();
   }
 
@@ -102,21 +103,24 @@ class _CustomerAnalysisScreenState extends State<CustomerAnalysisScreen> {
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               child: Row(
                 children: [
-                  const Text('📅 Month:', style: TextStyle(color: Colors.white70)),
+                  const Text(
+                    '📅 Month:',
+                    style: TextStyle(color: Colors.white70),
+                  ),
                   const SizedBox(width: 12),
                   DropdownButton<String>(
                     dropdownColor: Colors.blueGrey[900],
                     style: const TextStyle(color: Colors.white),
                     value: selectedLabel,
                     items: months.map((m) {
-                      return DropdownMenuItem(
-                        value: m,
-                        child: Text(m),
-                      );
+                      return DropdownMenuItem(value: m, child: Text(m));
                     }).toList(),
                     onChanged: (value) {
                       final index = months.indexOf(value!);
-                      final targetDate = DateTime(DateTime.now().year, DateTime.now().month - index);
+                      final targetDate = DateTime(
+                        DateTime.now().year,
+                        DateTime.now().month - index,
+                      );
                       setState(() => selectedMonth = targetDate);
                     },
                   ),

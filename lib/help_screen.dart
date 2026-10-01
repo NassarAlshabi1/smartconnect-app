@@ -41,12 +41,7 @@ class HelpScreen extends StatelessWidget {
               const SizedBox(height: 8),
               _contactTile('+255 655 124 365'),
               const Spacer(),
-              Center(
-                child: Image.asset(
-                  'assets/icon/help.png',
-                  height: 120,
-                ),
-              ),
+              Center(child: Image.asset('assets/icon/help.png', height: 120)),
             ],
           ),
         ),
@@ -61,11 +56,7 @@ class HelpScreen extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6,
-            offset: Offset(0, 2),
-          )
+          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
         ],
       ),
       child: Row(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 
 class MostFrequentPayers extends StatelessWidget {
   final DateTime month;
@@ -58,20 +58,22 @@ class MostFrequentPayers extends StatelessWidget {
                 style: TextStyle(color: Colors.white70),
               )
             else
-              ...top5.map((entry) => ListTile(
-                    leading: const Icon(Icons.repeat, color: Colors.white70),
-                    title: Text(
-                      entry.key,
-                      style: const TextStyle(color: Colors.white),
+              ...top5.map(
+                (entry) => ListTile(
+                  leading: const Icon(Icons.repeat, color: Colors.white70),
+                  title: Text(
+                    entry.key,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  trailing: Text(
+                    '${entry.value} payments',
+                    style: const TextStyle(
+                      color: Colors.deepPurpleAccent,
+                      fontWeight: FontWeight.bold,
                     ),
-                    trailing: Text(
-                      '${entry.value} payments',
-                      style: const TextStyle(
-                        color: Colors.deepPurpleAccent,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  )),
+                  ),
+                ),
+              ),
           ],
         ),
       ),

@@ -1,10 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 
 class BookingStatusService {
-  /// ✅ Check status by reading Firestore transaction document
+  /// ✅ Check status by reading local database transaction document
   static Future<String> checkStatus(String orderTrackingId) async {
     try {
-      final doc = await FirebaseFirestore.instance
+      final doc = await LocalDatabase.instance
           .collection('transactions')
           .doc(orderTrackingId)
           .get();
@@ -15,9 +15,13 @@ class BookingStatusService {
 
       if (status == "COMPLETED" || status == "SUCCESS") {
         return "COMPLETED";
-      } else if (status == "PENDING" || status == "INITIATED" || status == "PROCESSING") {
+      } else if (status == "PENDING" ||
+          status == "INITIATED" ||
+          status == "PROCESSING") {
         return "PENDING";
-      } else if (status == "FAIL" || status == "FAILED" || status == "CANCELLED") {
+      } else if (status == "FAIL" ||
+          status == "FAILED" ||
+          status == "CANCELLED") {
         return "FAIL";
       } else {
         return "UNKNOWN";
@@ -28,10 +32,12 @@ class BookingStatusService {
     }
   }
 
-  /// ✅ Fetch transaction details from Firestore
-  static Future<Map<String, dynamic>> fetchDetails(String orderTrackingId) async {
+  /// ✅ Fetch transaction details from local database
+  static Future<Map<String, dynamic>> fetchDetails(
+    String orderTrackingId,
+  ) async {
     try {
-      final doc = await FirebaseFirestore.instance
+      final doc = await LocalDatabase.instance
           .collection('transactions')
           .doc(orderTrackingId)
           .get();

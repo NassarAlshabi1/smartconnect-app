@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:smartconnect/local_database.dart';
+import 'package:smartconnect/local_auth_service.dart';
 import 'package:animate_do/animate_do.dart'; // Ensure this is added in pubspec.yaml
 
 class ProfileScreen extends StatelessWidget {
@@ -8,8 +8,11 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-    final userStream = FirebaseFirestore.instance.collection('users').doc(uid).snapshots();
+    final uid = AuthService.instance.currentUser!.uid;
+    final userStream = LocalDatabase.instance
+        .collection('users')
+        .doc(uid)
+        .snapshots();
 
     return Scaffold(
       appBar: AppBar(
@@ -54,18 +57,25 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(height: 24),
                   Text(
                     name,
-                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   phone != null && phone.toString().trim().isNotEmpty
                       ? Text(
                           phone,
-                          style: const TextStyle(fontSize: 16, color: Colors.black87),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.black87,
+                          ),
                         )
                       : SizedBox(
                           height: 40,
                           child: MarqueeText(
-                            text: 'Your phone number is not yet added. You can update it anytime for a better experience.',
+                            text:
+                                'Your phone number is not yet added. You can update it anytime for a better experience.',
                             style: const TextStyle(
                               fontSize: 15,
                               color: Colors.black54,
@@ -93,7 +103,8 @@ class MarqueeText extends StatefulWidget {
   State<MarqueeText> createState() => _MarqueeTextState();
 }
 
-class _MarqueeTextState extends State<MarqueeText> with SingleTickerProviderStateMixin {
+class _MarqueeTextState extends State<MarqueeText>
+    with SingleTickerProviderStateMixin {
   late final ScrollController _scrollController;
   late final AnimationController _controller;
 

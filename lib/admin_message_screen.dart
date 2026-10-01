@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:smartconnect/local_database.dart';
+import 'package:smartconnect/local_auth_service.dart';
 import 'send_message_service.dart';
 
 class AdminMessageScreen extends StatefulWidget {
@@ -26,7 +26,10 @@ class _AdminMessageScreenState extends State<AdminMessageScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Message', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'Message',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
             TextField(
               controller: _messageController,
@@ -46,10 +49,15 @@ class _AdminMessageScreenState extends State<AdminMessageScreen> {
                     ? const SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
                       )
                     : const Text('Send Message'),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple,
+                ),
                 onPressed: _isSending ? null : _handleSendMessage,
               ),
             ),
@@ -79,9 +87,9 @@ class _AdminMessageScreenState extends State<AdminMessageScreen> {
 
       _messageController.clear();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('⚠️ Failed to send message: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('⚠️ Failed to send message: $e')));
     } finally {
       setState(() => _isSending = false);
     }

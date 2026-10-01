@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 import 'package:smartconnect/add_voucher_dialog.dart';
 import 'package:smartconnect/edit_voucher_dialog.dart';
 import 'package:smartconnect/view_voucher_dialog.dart';
@@ -8,7 +8,8 @@ class VoucherManagementScreen extends StatefulWidget {
   const VoucherManagementScreen({super.key});
 
   @override
-  State<VoucherManagementScreen> createState() => _VoucherManagementScreenState();
+  State<VoucherManagementScreen> createState() =>
+      _VoucherManagementScreenState();
 }
 
 class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
@@ -25,11 +26,16 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
   }
 
   void _fetchPackageOptions() async {
-    final snapshot = await FirebaseFirestore.instance.collection('voucher_packages').get();
-    final names = snapshot.docs.map((doc) {
-      final data = doc.data();
-      return data['name']?.toString() ?? '';
-    }).where((name) => name.isNotEmpty).toList();
+    final snapshot = await LocalDatabase.instance
+        .collection('voucher_packages')
+        .get();
+    final names = snapshot.docs
+        .map((doc) {
+          final data = doc.data();
+          return data?['name']?.toString() ?? ''; 
+        })
+        .where((name) => name.isNotEmpty)
+        .toList();
 
     setState(() {
       packageOptions = names;
@@ -38,7 +44,7 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final voucherStream = FirebaseFirestore.instance
+    final voucherStream = LocalDatabase.instance
         .collection('vouchers')
         .orderBy('created_at', descending: true)
         .snapshots();
@@ -69,7 +75,8 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: TextField(
               controller: _searchController,
-              onChanged: (val) => setState(() => _searchTerm = val.toLowerCase()),
+              onChanged: (val) =>
+                  setState(() => _searchTerm = val.toLowerCase()),
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search, color: Colors.green),
                 hintText: 'Search vouchers...',
@@ -93,10 +100,16 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
                   child: DropdownButtonFormField<String>(
                     value: _statusFilter,
                     decoration: const InputDecoration(labelText: 'Status'),
-                    items: ['all', 'available', 'assigned', 'used', 'expired'].map((status) {
-                      return DropdownMenuItem(value: status, child: Text(status));
-                    }).toList(),
-                    onChanged: (val) => setState(() => _statusFilter = val ?? 'all'),
+                    items: ['all', 'available', 'assigned', 'used', 'expired']
+                        .map((status) {
+                          return DropdownMenuItem(
+                            value: status,
+                            child: Text(status),
+                          );
+                        })
+                        .toList(),
+                    onChanged: (val) =>
+                        setState(() => _statusFilter = val ?? 'all'),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -109,7 +122,8 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
                     items: ['all', ...packageOptions].map((pkg) {
                       return DropdownMenuItem(value: pkg, child: Text(pkg));
                     }).toList(),
-                    onChanged: (val) => setState(() => _packageFilter = val ?? 'all'),
+                    onChanged: (val) =>
+                        setState(() => _packageFilter = val ?? 'all'),
                   ),
                 ),
               ],
@@ -120,25 +134,36 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
             child: StreamBuilder<QuerySnapshot>(
               stream: voucherStream,
               builder: (context, snapshot) {
-                if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                if (!snapshot.hasData)
+                  return const Center(child: CircularProgressIndicator());
 
                 final docs = snapshot.data!.docs;
                 final filtered = docs.where((doc) {
                   final data = doc.data() as Map<String, dynamic>;
                   final code = data['code']?.toString().toLowerCase() ?? '';
-                  final package = data['package']?.toString().toLowerCase() ?? '';
-                  final network = data['network']?.toString().toLowerCase() ?? '';
+                  final package =
+                      data['package']?.toString().toLowerCase() ?? '';
+                  final network =
+                      data['network']?.toString().toLowerCase() ?? '';
                   final status = data['status']?.toString().toLowerCase() ?? '';
 
-                  final matchText = code.contains(_searchTerm) || package.contains(_searchTerm) || network.contains(_searchTerm);
-                  final matchStatus = _statusFilter == 'all' || status == _statusFilter;
-                  final matchPackage = _packageFilter == 'all' || package == _packageFilter.toLowerCase();
+                  final matchText =
+                      code.contains(_searchTerm) ||
+                      package.contains(_searchTerm) ||
+                      network.contains(_searchTerm);
+                  final matchStatus =
+                      _statusFilter == 'all' || status == _statusFilter;
+                  final matchPackage =
+                      _packageFilter == 'all' ||
+                      package == _packageFilter.toLowerCase();
 
                   return matchText && matchStatus && matchPackage;
                 }).toList();
 
                 if (filtered.isEmpty) {
-                  return const Center(child: Text('No vouchers match that filter.'));
+                  return const Center(
+                    child: Text('No vouchers match that filter.'),
+                  );
                 }
 
                 return ListView.builder(
@@ -170,7 +195,8 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
                               onPressed: () {
                                 showDialog(
                                   context: context,
-                                  builder: (_) => EditVoucherDialog(document: doc),
+                                  builder: (_) =>
+                                      EditVoucherDialog(document: doc),
                                 );
                               },
                             ),
@@ -182,7 +208,9 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
                                   context: context,
                                   builder: (_) => AlertDialog(
                                     title: const Text('Delete Voucher?'),
-                                    content: const Text('Are you sure you want to delete this voucher?'),
+                                    content: const Text(
+                                      'Are you sure you want to delete this voucher?',
+                                    ),
                                     actions: [
                                       TextButton(
                                         onPressed: () => Navigator.pop(context),
@@ -193,7 +221,10 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
                                           await doc.reference.delete();
                                           Navigator.pop(context);
                                         },
-                                        child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                        child: const Text(
+                                          'Delete',
+                                          style: TextStyle(color: Colors.red),
+                                        ),
                                       ),
                                     ],
                                   ),

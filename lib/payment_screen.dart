@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_auth_service.dart';
+import 'package:smartconnect/local_database.dart';
 import 'package:smartconnect/payment_service.dart';
 import 'package:smartconnect/success_screen.dart';
 import 'package:smartconnect/zenopay_ux_helper.dart';
@@ -36,7 +36,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
       'image': 'assets/payments/airtel_card.png',
       'color': Color(0xFFE60000),
     },
-    
   ];
 
   int selectedIndex = 0;
@@ -58,18 +57,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     network = args['network'];
     package = args['package'];
     price = args['price'];
   }
 
   Future<void> _payNow() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final uid = AuthService.instance.currentUser?.uid;
     if (uid == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('User not logged in')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('User not logged in')));
       return;
     }
 
@@ -78,7 +78,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
     final phone = _phoneController.text.trim();
     final selectedMethod = paymentMethods[selectedIndex]['name'];
 
-    final userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    final userDoc = await LocalDatabase.instance
+        .collection('users')
+        .doc(uid)
+        .get();
     final buyerName = userDoc.data()?['full_name'] ?? "SmartConnect User";
     final buyerEmail = "$phone@smartconnect.tz";
 
@@ -121,13 +124,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
       return;
     }
 
-    Navigator.of(context).pushReplacement(MaterialPageRoute(
-      builder: (_) => SuccessScreen(
-        orderTrackingId: orderId,
-        network: network,
-        package: package,
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => SuccessScreen(
+          orderTrackingId: orderId,
+          network: network,
+          package: package,
+        ),
       ),
-    ));
+    );
   }
 
   @override
@@ -166,23 +171,37 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Network: $network', style: const TextStyle(fontSize: 16)),
-                      Text('Package: $package', style: const TextStyle(fontSize: 16)),
-                      Text('Price: TZS $price',
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      Text(
+                        'Network: $network',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      Text(
+                        'Package: $package',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      Text(
+                        'Price: TZS $price',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Text('Choose Payment Method',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const Text(
+                  'Choose Payment Method',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 12),
                 SizedBox(
                   height: 180,
                   child: PageView.builder(
                     controller: _pageController,
                     itemCount: paymentMethods.length,
-                    onPageChanged: (index) => setState(() => selectedIndex = index),
+                    onPageChanged: (index) =>
+                        setState(() => selectedIndex = index),
                     itemBuilder: (context, index) {
                       final method = paymentMethods[index];
                       final isSelected = index == selectedIndex;
@@ -255,7 +274,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       backgroundColor: Colors.deepPurple,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
-                    child: const Text('Pay Now', style: TextStyle(fontSize: 16, color: Colors.white)),
+                    child: const Text(
+                      'Pay Now',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
                   ),
                 ),
               ],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 import 'customer_analysis_screen.dart';
 import 'activate_deactivate_screen.dart';
 import 'home_admin_screen.dart';
@@ -65,7 +65,10 @@ class _MainDashboardState extends State<MainDashboard> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel', style: TextStyle(color: Colors.redAccent)),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: Colors.redAccent),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
@@ -121,7 +124,7 @@ class _MainDashboardState extends State<MainDashboard> {
                         color: Colors.cyanAccent,
                         blurRadius: 12,
                         offset: Offset(0, 0),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -172,11 +175,12 @@ class _MainDashboardState extends State<MainDashboard> {
                     showDialog(
                       context: context,
                       barrierDismissible: false,
-                      builder: (_) => const Center(child: CircularProgressIndicator()),
+                      builder: (_) =>
+                          const Center(child: CircularProgressIndicator()),
                     );
 
                     try {
-                      final snapshot = await FirebaseFirestore.instance
+                      final snapshot = await LocalDatabase.instance
                           .collection('transactions')
                           .orderBy('created_at', descending: true)
                           .get();
@@ -188,13 +192,17 @@ class _MainDashboardState extends State<MainDashboard> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => CustomerAnalysisScreen(allTransactions: allTransactions),
+                          builder: (_) => CustomerAnalysisScreen(
+                            allTransactions: allTransactions,
+                          ),
                         ),
                       );
                     } catch (e) {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('⚠️ Failed to load transactions: $e')),
+                        SnackBar(
+                          content: Text('⚠️ Failed to load transactions: $e'),
+                        ),
                       );
                     }
                   },
@@ -248,7 +256,10 @@ class _MainDashboardState extends State<MainDashboard> {
             const SizedBox(height: 10),
             Text(
               title,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -260,7 +271,7 @@ class _MainDashboardState extends State<MainDashboard> {
   Widget _navIcon(IconData icon, String iconType) {
     if (iconType == 'person') {
       return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
+        stream: LocalDatabase.instance
             .collection('feedbacks')
             .where('status', isEqualTo: 'unread')
             .snapshots(),
@@ -297,7 +308,10 @@ class _MainDashboardState extends State<MainDashboard> {
                       color: Colors.red,
                       shape: BoxShape.circle,
                     ),
-                    constraints: const BoxConstraints(minWidth: 20, minHeight: 20),
+                    constraints: const BoxConstraints(
+                      minWidth: 20,
+                      minHeight: 20,
+                    ),
                     child: Center(
                       child: Text(
                         '$unreadCount',
@@ -322,7 +336,8 @@ class _MainDashboardState extends State<MainDashboard> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const HomeAdminScreen()),
-          );         } else if (iconType == 'search') {
+          );
+        } else if (iconType == 'search') {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const SearchScreen()),

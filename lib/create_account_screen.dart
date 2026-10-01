@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_auth_service.dart';
+import 'package:smartconnect/local_database.dart';
 
 class CreateAccountScreen extends StatefulWidget {
   const CreateAccountScreen({super.key});
@@ -24,7 +24,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     final password = _passwordController.text.trim();
     final confirmPassword = _confirmPasswordController.text.trim();
 
-    if (name.isEmpty || phone.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+    if (name.isEmpty ||
+        phone.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all fields')),
       );
@@ -46,9 +49,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     }
 
     if (password != confirmPassword) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
       return;
     }
 
@@ -58,25 +61,30 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       final sanitizedPhone = phone.replaceAll(RegExp(r'\D'), '');
       final email = '$sanitizedPhone@smartconnect.tz';
 
-      final credential = await FirebaseAuth.instance
+      final credential = await AuthService.instance
           .createUserWithEmailAndPassword(email: email, password: password);
 
-      await FirebaseFirestore.instance.collection('users').doc(credential.user!.uid).set({
-        'full_name': name,
-        'phone_number': phone,
-        'uid': credential.user!.uid,
-        'created_at': FieldValue.serverTimestamp(),
-        'role': 'customer',
-        'is_active': true,
-        'is_admin': false,
-        'status': 'active',
-      });
+      await LocalDatabase.instance
+          .collection('users')
+          .doc(credential.user.uid)
+          .set({
+            'full_name': name,
+            'phone_number': phone,
+            'uid': credential.user.uid,
+            'created_at': FieldValue.serverTimestamp(),
+            'role': 'customer',
+            'is_active': true,
+            'is_admin': false,
+            'status': 'active',
+          });
 
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
           title: const Text('Success'),
-          content: const Text('Your account has been created. You can now log in.'),
+          content: const Text(
+            'Your account has been created. You can now log in.',
+          ),
           actions: [
             TextButton(
               onPressed: () {
@@ -88,7 +96,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
           ],
         ),
       );
-    } on FirebaseAuthException catch (e) {
+    } on AuthException catch (e) {
       String message = 'Signup failed';
       if (e.code == 'email-already-in-use') {
         message = 'An account with this phone already exists';
@@ -159,7 +167,11 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                       prefixIcon: const Icon(Icons.lock),
                       border: const OutlineInputBorder(),
                       suffixIcon: IconButton(
-                        icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
                         onPressed: () {
                           setState(() => _obscurePassword = !_obscurePassword);
                         },
@@ -175,9 +187,16 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                       prefixIcon: const Icon(Icons.lock_outline),
                       border: const OutlineInputBorder(),
                       suffixIcon: IconButton(
-                        icon: Icon(_obscureConfirmPassword ? Icons.visibility_off : Icons.visibility),
+                        icon: Icon(
+                          _obscureConfirmPassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
                         onPressed: () {
-                          setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
+                          setState(
+                            () => _obscureConfirmPassword =
+                                !_obscureConfirmPassword,
+                          );
                         },
                       ),
                     ),

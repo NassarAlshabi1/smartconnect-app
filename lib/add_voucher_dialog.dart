@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_database.dart';
 
 class AddVoucherDialog extends StatefulWidget {
   const AddVoucherDialog({super.key});
@@ -31,7 +31,9 @@ class _AddVoucherDialogState extends State<AddVoucherDialog> {
 
   Future<void> _loadNetworkOptions() async {
     try {
-      final snapshot = await FirebaseFirestore.instance.collection('networks').get();
+      final snapshot = await LocalDatabase.instance
+          .collection('networks')
+          .get();
       final names = snapshot.docs.map((doc) => doc['name'].toString()).toList();
       setState(() {
         networkOptions = names;
@@ -39,15 +41,17 @@ class _AddVoucherDialogState extends State<AddVoucherDialog> {
       });
     } catch (e) {
       setState(() => isLoadingNetworks = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('⚠️ Failed to load networks: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('⚠️ Failed to load networks: $e')));
     }
   }
 
   Future<void> _loadPackageOptions() async {
     try {
-      final snapshot = await FirebaseFirestore.instance.collection('voucher_packages').get();
+      final snapshot = await LocalDatabase.instance
+          .collection('voucher_packages')
+          .get();
       final names = snapshot.docs.map((doc) => doc['name'].toString()).toList();
       setState(() {
         packageOptions = names;
@@ -55,15 +59,15 @@ class _AddVoucherDialogState extends State<AddVoucherDialog> {
       });
     } catch (e) {
       setState(() => isLoadingPackages = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('⚠️ Failed to load packages: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('⚠️ Failed to load packages: $e')));
     }
   }
 
   Future<void> _submitVoucher() async {
     if (_formKey.currentState!.validate() && expiryDate != null) {
-      await FirebaseFirestore.instance.collection('vouchers').add({
+      await LocalDatabase.instance.collection('vouchers').add({
         'code': _codeController.text.trim(),
         'network': selectedNetwork,
         'package': selectedPackage,
@@ -83,7 +87,10 @@ class _AddVoucherDialogState extends State<AddVoucherDialog> {
     return AlertDialog(
       title: const Text('Add New Voucher'),
       content: isLoading
-          ? const SizedBox(height: 100, child: Center(child: CircularProgressIndicator()))
+          ? const SizedBox(
+              height: 100,
+              child: Center(child: CircularProgressIndicator()),
+            )
           : SingleChildScrollView(
               child: Form(
                 key: _formKey,
@@ -91,16 +98,24 @@ class _AddVoucherDialogState extends State<AddVoucherDialog> {
                   children: [
                     TextFormField(
                       controller: _codeController,
-                      decoration: const InputDecoration(labelText: 'Voucher Code'),
-                      validator: (val) =>
-                          val == null || val.trim().isEmpty ? 'Enter code' : null,
+                      decoration: const InputDecoration(
+                        labelText: 'Voucher Code',
+                      ),
+                      validator: (val) => val == null || val.trim().isEmpty
+                          ? 'Enter code'
+                          : null,
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
                       value: selectedNetwork,
-                      decoration: const InputDecoration(labelText: 'Network Name'),
+                      decoration: const InputDecoration(
+                        labelText: 'Network Name',
+                      ),
                       items: networkOptions.map((network) {
-                        return DropdownMenuItem(value: network, child: Text(network));
+                        return DropdownMenuItem(
+                          value: network,
+                          child: Text(network),
+                        );
                       }).toList(),
                       onChanged: (val) => setState(() => selectedNetwork = val),
                       validator: (val) => val == null ? 'Choose network' : null,
@@ -129,9 +144,13 @@ class _AddVoucherDialogState extends State<AddVoucherDialog> {
                           onPressed: () async {
                             final picked = await showDatePicker(
                               context: context,
-                              initialDate: DateTime.now().add(const Duration(days: 1)),
+                              initialDate: DateTime.now().add(
+                                const Duration(days: 1),
+                              ),
                               firstDate: DateTime.now(),
-                              lastDate: DateTime.now().add(const Duration(days: 365)),
+                              lastDate: DateTime.now().add(
+                                const Duration(days: 365),
+                              ),
                             );
                             if (picked != null) {
                               setState(() => expiryDate = picked);
@@ -146,7 +165,10 @@ class _AddVoucherDialogState extends State<AddVoucherDialog> {
               ),
             ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
         ElevatedButton(onPressed: _submitVoucher, child: const Text('Add')),
       ],
     );

@@ -9,7 +9,8 @@ class ResetPasswordScreen extends StatefulWidget {
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
-class _ResetPasswordScreenState extends State<ResetPasswordScreen> with TickerProviderStateMixin {
+class _ResetPasswordScreenState extends State<ResetPasswordScreen>
+    with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
@@ -52,12 +53,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with TickerPr
 
     try {
       final response = await http.post(
-        Uri.parse('https://smartconnect-pesapal-api.onrender.com/api/reset-password/'),
+        Uri.parse(
+          'https://smartconnect-pesapal-api.onrender.com/api/reset-password/',
+        ),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'uid': uid,
-          'new_password': newPassword,
-        }),
+        body: jsonEncode({'uid': uid, 'new_password': newPassword}),
       );
 
       final result = jsonDecode(response.body);
@@ -69,18 +69,24 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with TickerPr
           context: context,
           barrierDismissible: false,
           builder: (_) => AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             contentPadding: const EdgeInsets.all(24),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: const [
                 Icon(Icons.check_circle, color: Colors.green, size: 60),
                 SizedBox(height: 16),
-                Text('✅ Password reset successful!',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(
+                  '✅ Password reset successful!',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
                 SizedBox(height: 8),
-                Text('You will be redirected to login...',
-                    style: TextStyle(fontSize: 14, color: Colors.black54)),
+                Text(
+                  'You will be redirected to login...',
+                  style: TextStyle(fontSize: 14, color: Colors.black54),
+                ),
               ],
             ),
           ),
@@ -102,13 +108,19 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with TickerPr
 
   Widget _buildSuccessAnimation() {
     return ScaleTransition(
-      scale: CurvedAnimation(parent: _successController, curve: Curves.easeOutBack),
+      scale: CurvedAnimation(
+        parent: _successController,
+        curve: Curves.easeOutBack,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: const [
           Icon(Icons.check_circle, color: Colors.green, size: 80),
           SizedBox(height: 12),
-          Text('Password Updated!', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(
+            'Password Updated!',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
         ],
       ),
     );
@@ -136,70 +148,77 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with TickerPr
                 child: _isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : _isSuccess
-                        ? _buildSuccessAnimation()
-                        : SingleChildScrollView(
-                            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                            child: Form(
-                              key: _formKey,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    'Hello $phone 👋🏾',
-                                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  const Text(
-                                    'Set your new password below',
-                                    style: TextStyle(fontSize: 14, color: Colors.black54),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  TextFormField(
-                                    controller: _passwordController,
-                                    obscureText: true,
-                                    decoration: const InputDecoration(
-                                      labelText: 'New Password',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                    validator: (val) {
-                                      if (val == null || val.length < 6) {
-                                        return 'Minimum 6 characters';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  const SizedBox(height: 16),
-                                  TextFormField(
-                                    controller: _confirmController,
-                                    obscureText: true,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Confirm Password',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                    validator: (val) {
-                                      if (val != _passwordController.text) {
-                                        return 'Passwords do not match';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  const SizedBox(height: 24),
-                                  SizedBox(
-                                    width: double.infinity,
-                                    height: 48,
-                                    child: ElevatedButton.icon(
-                                      icon: const Icon(Icons.lock_reset),
-                                      label: const Text('Reset Password'),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.orange[700],
-                                      ),
-                                      onPressed: _submitNewPassword,
-                                    ),
-                                  ),
-                                ],
+                    ? _buildSuccessAnimation()
+                    : SingleChildScrollView(
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Hello $phone 👋🏾',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
+                              const SizedBox(height: 12),
+                              const Text(
+                                'Set your new password below',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              TextFormField(
+                                controller: _passwordController,
+                                obscureText: true,
+                                decoration: const InputDecoration(
+                                  labelText: 'New Password',
+                                  border: OutlineInputBorder(),
+                                ),
+                                validator: (val) {
+                                  if (val == null || val.length < 6) {
+                                    return 'Minimum 6 characters';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              TextFormField(
+                                controller: _confirmController,
+                                obscureText: true,
+                                decoration: const InputDecoration(
+                                  labelText: 'Confirm Password',
+                                  border: OutlineInputBorder(),
+                                ),
+                                validator: (val) {
+                                  if (val != _passwordController.text) {
+                                    return 'Passwords do not match';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 24),
+                              SizedBox(
+                                width: double.infinity,
+                                height: 48,
+                                child: ElevatedButton.icon(
+                                  icon: const Icon(Icons.lock_reset),
+                                  label: const Text('Reset Password'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.orange[700],
+                                  ),
+                                  onPressed: _submitNewPassword,
+                                ),
+                              ),
+                            ],
                           ),
+                        ),
+                      ),
               ),
             ),
           ),

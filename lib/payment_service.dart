@@ -3,7 +3,8 @@ import 'dart:convert';
 
 class PaymentService {
   // 🔗 Backend URL hosted on Render
-  static const String baseUrl = "https://smartconnect-pesapal-api.onrender.com/api/zenopay";
+  static const String baseUrl =
+      "https://smartconnect-pesapal-api.onrender.com/api/zenopay";
 
   /// 🧾 Step 1: Initiate Zenopay payment via Django backend
   static Future<String?> initiateZenopayPayment({
@@ -98,7 +99,11 @@ class PaymentService {
 
           if (rawStatus == "COMPLETED" || rawStatus == "SUCCESS") {
             return "COMPLETED";
-          } else if (["PENDING", "INITIATED", "PROCESSING"].contains(rawStatus)) {
+          } else if ([
+            "PENDING",
+            "INITIATED",
+            "PROCESSING",
+          ].contains(rawStatus)) {
             return "PENDING";
           } else if (["FAIL", "FAILED", "CANCELLED"].contains(rawStatus)) {
             return "FAIL";

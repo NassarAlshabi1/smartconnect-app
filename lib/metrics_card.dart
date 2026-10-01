@@ -23,7 +23,9 @@ class MetricsCard extends StatelessWidget {
         return Card(
           elevation: 3,
           color: Colors.white.withOpacity(0.95),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
             child: Column(
