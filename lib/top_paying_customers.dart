@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 
 class TopPayingCustomers extends StatelessWidget {
   final DateTime month;
-  final List<DocumentSnapshot> payments;
+  final List<LocalDocSnapshot> payments;
 
   const TopPayingCustomers({
     super.key,

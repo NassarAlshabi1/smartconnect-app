@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,19 +15,12 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
 
   void _handleLogin() async {
-    final phone = _usernameController.text.trim();
+    final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
 
-    if (phone.isEmpty || password.isEmpty) {
+    if (username.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter all fields')),
-      );
-      return;
-    }
-
-    if (!RegExp(r'^0\d{9}$').hasMatch(phone)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter a valid Tanzanian phone number')),
       );
       return;
     }
@@ -36,14 +28,26 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final sanitizedPhone = phone.replaceAll(RegExp(r'\D'), '');
-      final email = '$sanitizedPhone@smartconnect.tz';
+      // Local authentication (Firebase removed).
+      // The built-in administrator signs in with username "admin" and
+      // password "admin"; customer accounts keep using the phone number
+      // they registered with.
+      String loginKey;
+      if (username.toLowerCase() == 'admin') {
+        loginKey = 'admin';
+      } else if (RegExp(r'^0\d{9}$').hasMatch(username)) {
+        loginKey = username.replaceAll(RegExp(r'\D'), '');
+      } else {
+        loginKey = username;
+      }
 
-      final userCredential = await FirebaseAuth.instance
+      final email = '$loginKey@smartconnect.tz';
+
+      final userCredential = await LocalAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
 
-      final uid = userCredential.user!.uid;
-      final doc = await FirebaseFirestore.instance
+      final uid = userCredential.user.uid;
+      final doc = await LocalFirestore.instance
           .collection('users')
           .doc(uid)
           .get();
@@ -58,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final role = data['role']?.toString().toLowerCase() ?? 'customer';
 
       if (!isActive || status == 'inactive') {
-        await FirebaseAuth.instance.signOut();
+        await LocalAuth.instance.signOut();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('🚫 Akaunti yako imezimwa. Tafadhali wasiliana na admin.'),
@@ -72,14 +76,14 @@ class _LoginScreenState extends State<LoginScreen> {
       } else if (role == 'customer') {
         Navigator.pushReplacementNamed(context, '/customer');
       } else {
-        await FirebaseAuth.instance.signOut();
+        await LocalAuth.instance.signOut();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('⚠️ Role haijafafanuliwa vizuri. Tafadhali wasiliana na admin.'),
           ),
         );
       }
-    } on FirebaseAuthException catch (e) {
+    } on LocalAuthException catch (e) {
       String message = 'Login failed';
       if (e.code == 'user-not-found') {
         message = 'Account not found';
@@ -135,10 +139,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       TextField(
                         controller: _usernameController,
-                        keyboardType: TextInputType.phone,
+                        keyboardType: TextInputType.text,
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Icons.person),
-                          labelText: 'Phone Number',
+                          labelText: 'Username',
                           border: OutlineInputBorder(),
                         ),
                       ),

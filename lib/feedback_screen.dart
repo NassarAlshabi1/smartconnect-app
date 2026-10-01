@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:smartconnect/local_backend.dart';
 
 class FeedbackScreen extends StatefulWidget {
   const FeedbackScreen({super.key});
@@ -11,7 +10,7 @@ class FeedbackScreen extends StatefulWidget {
 
 class _FeedbackScreenState extends State<FeedbackScreen> {
   final TextEditingController _controller = TextEditingController();
-  final uid = FirebaseAuth.instance.currentUser!.uid;
+  final uid = LocalAuth.instance.currentUser!.uid;
   String? editingId;
   bool isSubmitting = false;
 
@@ -23,7 +22,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
     try {
       if (editingId != null) {
-        await FirebaseFirestore.instance
+        await LocalFirestore.instance
             .collection('feedbacks')
             .doc(editingId)
             .update({'message': message});
@@ -31,7 +30,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           const SnackBar(content: Text('✅ Feedback updated successfully')),
         );
       } else {
-        await FirebaseFirestore.instance.collection('feedbacks').add({
+        await LocalFirestore.instance.collection('feedbacks').add({
           'user_id': uid,
           'message': message,
           'timestamp': Timestamp.now(),
@@ -54,7 +53,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   }
 
   void deleteFeedback(String id) async {
-    await FirebaseFirestore.instance.collection('feedbacks').doc(id).delete();
+    await LocalFirestore.instance.collection('feedbacks').doc(id).delete();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('🗑️ Feedback deleted')),
     );
@@ -67,7 +66,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final feedbackStream = FirebaseFirestore.instance
+    final feedbackStream = LocalFirestore.instance
         .collection('feedbacks')
         .where('user_id', isEqualTo: uid)
         .orderBy('timestamp', descending: true)
@@ -135,7 +134,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               ),
               const SizedBox(height: 10),
               Expanded(
-                child: StreamBuilder<QuerySnapshot>(
+                child: StreamBuilder<LocalQuerySnapshot>(
                   stream: feedbackStream,
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
@@ -152,7 +151,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       itemCount: docs.length,
                       itemBuilder: (context, index) {
                         final doc = docs[index];
-                        final data = doc.data() as Map<String, dynamic>;
+                        final data = doc.data();
                         final message = data['message'] ?? '';
                         final timestamp = (data['timestamp'] as Timestamp).toDate();
 

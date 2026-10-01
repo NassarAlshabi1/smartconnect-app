@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -11,7 +11,7 @@ class PaymentsGraph extends StatelessWidget {
     final start = DateTime(selectedMonth.year, selectedMonth.month, 1);
     final end = DateTime(selectedMonth.year, selectedMonth.month + 1, 1);
 
-    final query = await FirebaseFirestore.instance
+    final query = await LocalFirestore.instance
         .collection('transactions')
         .where('status', isEqualTo: 'COMPLETED')
         .where('created_at', isGreaterThanOrEqualTo: Timestamp.fromDate(start))

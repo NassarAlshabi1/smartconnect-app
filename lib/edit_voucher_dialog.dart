@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 
 class EditVoucherDialog extends StatefulWidget {
-  final DocumentSnapshot document;
+  final LocalDocSnapshot document;
 
   const EditVoucherDialog({super.key, required this.document});
 
@@ -37,7 +37,7 @@ class _EditVoucherDialogState extends State<EditVoucherDialog> {
 
   Future<void> _loadNetworkOptions() async {
     try {
-      final snapshot = await FirebaseFirestore.instance.collection('networks').get();
+      final snapshot = await LocalFirestore.instance.collection('networks').get();
       final names = snapshot.docs.map((doc) => doc['name'].toString()).toList();
 
       if (selectedNetwork != null && !names.contains(selectedNetwork)) {
@@ -58,7 +58,7 @@ class _EditVoucherDialogState extends State<EditVoucherDialog> {
 
   Future<void> _loadPackageOptions() async {
     try {
-      final snapshot = await FirebaseFirestore.instance.collection('voucher_packages').get();
+      final snapshot = await LocalFirestore.instance.collection('voucher_packages').get();
       final names = snapshot.docs.map((doc) => doc['name'].toString()).toList();
 
       if (selectedPackage != null && !names.contains(selectedPackage)) {

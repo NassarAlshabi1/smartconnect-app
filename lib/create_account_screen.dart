@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 
 class CreateAccountScreen extends StatefulWidget {
   const CreateAccountScreen({super.key});
@@ -58,13 +57,15 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       final sanitizedPhone = phone.replaceAll(RegExp(r'\D'), '');
       final email = '$sanitizedPhone@smartconnect.tz';
 
-      final credential = await FirebaseAuth.instance
+      final credential = await LocalAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
 
-      await FirebaseFirestore.instance.collection('users').doc(credential.user!.uid).set({
+      await LocalFirestore.instance.collection('users').doc(credential.user.uid).set({
         'full_name': name,
         'phone_number': phone,
-        'uid': credential.user!.uid,
+        'uid': credential.user.uid,
+        'email': email,
+        'password': password,
         'created_at': FieldValue.serverTimestamp(),
         'role': 'customer',
         'is_active': true,
@@ -88,7 +89,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
           ],
         ),
       );
-    } on FirebaseAuthException catch (e) {
+    } on LocalAuthException catch (e) {
       String message = 'Signup failed';
       if (e.code == 'email-already-in-use') {
         message = 'An account with this phone already exists';

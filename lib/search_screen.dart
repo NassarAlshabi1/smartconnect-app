@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -10,7 +10,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   String _searchTerm = '';
-  List<DocumentSnapshot> _results = [];
+  List<LocalDocSnapshot> _results = [];
   bool _isLoading = false;
 
   Future<void> _performSearch() async {
@@ -22,7 +22,7 @@ class _SearchScreenState extends State<SearchScreen> {
     });
 
     try {
-      final snapshot = await FirebaseFirestore.instance
+      final snapshot = await LocalFirestore.instance
           .collection('vouchers')
           .where('network', isEqualTo: _searchTerm.trim())
           .where('status', isEqualTo: 'available')

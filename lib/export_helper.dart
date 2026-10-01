@@ -1,15 +1,14 @@
 import 'dart:io';
-import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:open_file/open_file.dart';
 
 Future<void> exportPaymentsToCSV(
-  List<DocumentSnapshot> payments,
+  List<LocalDocSnapshot> payments,
   DateTime month,
   BuildContext context,
 ) async {

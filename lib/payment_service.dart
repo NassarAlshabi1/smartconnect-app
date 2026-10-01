@@ -79,7 +79,6 @@ class PaymentService {
 
     int attempts = 0;
     const maxAttempts = 3;
-    String lastError = "";
 
     while (attempts < maxAttempts) {
       try {
@@ -107,11 +106,9 @@ class PaymentService {
           }
         } else {
           print('❌ Status check failed: ${response.statusCode}');
-          lastError = "Status code ${response.statusCode}";
         }
       } catch (e) {
         print('❌ Exception during status check: $e');
-        lastError = e.toString();
       }
 
       attempts++;

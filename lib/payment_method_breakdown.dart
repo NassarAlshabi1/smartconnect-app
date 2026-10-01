@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class PaymentMethodBreakdown extends StatelessWidget {
   final DateTime month;
-  final List<DocumentSnapshot> payments;
+  final List<LocalDocSnapshot> payments;
 
   const PaymentMethodBreakdown({
     super.key,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 import 'package:smartconnect/payment_service.dart';
 import 'package:smartconnect/success_screen.dart';
 import 'package:smartconnect/zenopay_ux_helper.dart';
@@ -65,7 +64,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   Future<void> _payNow() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final uid = LocalAuth.instance.currentUser?.uid;
     if (uid == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('User not logged in')),
@@ -78,7 +77,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     final phone = _phoneController.text.trim();
     final selectedMethod = paymentMethods[selectedIndex]['name'];
 
-    final userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    final userDoc = await LocalFirestore.instance.collection('users').doc(uid).get();
     final buyerName = userDoc.data()?['full_name'] ?? "SmartConnect User";
     final buyerEmail = "$phone@smartconnect.tz";
 

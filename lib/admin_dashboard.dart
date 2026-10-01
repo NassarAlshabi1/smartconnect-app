@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 import 'package:smartconnect/metrics_card.dart';
 import 'package:smartconnect/voucher_management_screen.dart';
 import 'package:smartconnect/customer_management_screen.dart';
@@ -10,7 +9,7 @@ class AdminDashboardScreen extends StatelessWidget {
 
   void _logout(BuildContext context) async {
     try {
-      await FirebaseAuth.instance.signOut();
+      await LocalAuth.instance.signOut();
       Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -21,8 +20,8 @@ class AdminDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-    final userStream = FirebaseFirestore.instance.collection('users').doc(uid).snapshots();
+    final uid = LocalAuth.instance.currentUser!.uid;
+    final userStream = LocalFirestore.instance.collection('users').doc(uid).snapshots();
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -92,7 +91,7 @@ class AdminDashboardScreen extends StatelessWidget {
             ),
           ),
           Container(color: Colors.black.withOpacity(0.4)),
-          StreamBuilder<DocumentSnapshot>(
+          StreamBuilder<LocalDocSnapshot>(
             stream: userStream,
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
@@ -131,13 +130,13 @@ class AdminDashboardScreen extends StatelessWidget {
     final now = DateTime.now();
     final twoDaysLater = now.add(const Duration(days: 2));
 
-    final vouchersStream = FirebaseFirestore.instance.collection('vouchers').snapshots();
-    final usersStream = FirebaseFirestore.instance.collection('users').snapshots();
+    final vouchersStream = LocalFirestore.instance.collection('vouchers').snapshots();
+    final usersStream = LocalFirestore.instance.collection('users').snapshots();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        StreamBuilder<QuerySnapshot>(
+        StreamBuilder<LocalQuerySnapshot>(
           stream: usersStream,
           builder: (context, snapshot) {
             int totalCustomers = 0;
@@ -157,7 +156,7 @@ class AdminDashboardScreen extends StatelessWidget {
           },
         ),
         const SizedBox(height: 16),
-        StreamBuilder<QuerySnapshot>(
+        StreamBuilder<LocalQuerySnapshot>(
           stream: vouchersStream,
           builder: (context, snapshot) {
             if (!snapshot.hasData) {

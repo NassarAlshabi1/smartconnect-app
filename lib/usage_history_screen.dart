@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 import 'package:intl/intl.dart';
 
 class UsageHistoryScreen extends StatelessWidget {
@@ -9,7 +9,7 @@ class UsageHistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final usageRef = FirebaseFirestore.instance
+    final usageRef = LocalFirestore.instance
         .collection('users')
         .doc(userId)
         .collection('usageHistory')
@@ -20,7 +20,7 @@ class UsageHistoryScreen extends StatelessWidget {
         title: const Text('Usage History'),
         backgroundColor: Colors.deepPurple,
       ),
-      body: StreamBuilder<QuerySnapshot>(
+      body: StreamBuilder<LocalQuerySnapshot>(
         stream: usageRef.snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
@@ -33,7 +33,7 @@ class UsageHistoryScreen extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             itemCount: docs.length,
             itemBuilder: (context, index) {
-              final data = docs[index].data() as Map<String, dynamic>;
+              final data = docs[index].data();
               final timestamp = (data['timestamp'] as Timestamp?)?.toDate();
               final formattedDate = timestamp != null
                   ? DateFormat('dd MMM yyyy, hh:mm a').format(timestamp)

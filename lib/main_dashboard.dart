@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 import 'customer_analysis_screen.dart';
 import 'activate_deactivate_screen.dart';
 import 'home_admin_screen.dart';
@@ -176,7 +176,7 @@ class _MainDashboardState extends State<MainDashboard> {
                     );
 
                     try {
-                      final snapshot = await FirebaseFirestore.instance
+                      final snapshot = await LocalFirestore.instance
                           .collection('transactions')
                           .orderBy('created_at', descending: true)
                           .get();
@@ -259,8 +259,8 @@ class _MainDashboardState extends State<MainDashboard> {
 
   Widget _navIcon(IconData icon, String iconType) {
     if (iconType == 'person') {
-      return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
+      return StreamBuilder<LocalQuerySnapshot>(
+        stream: LocalFirestore.instance
             .collection('feedbacks')
             .where('status', isEqualTo: 'unread')
             .snapshots(),

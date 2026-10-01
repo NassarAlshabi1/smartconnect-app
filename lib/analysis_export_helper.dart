@@ -1,9 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
@@ -11,7 +10,7 @@ import 'package:open_file/open_file.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 Future<void> exportAnalysisToPDF({
-  required List<DocumentSnapshot> transactions,
+  required List<LocalDocSnapshot> transactions,
   required DateTime month,
   required BuildContext context,
 }) async {
@@ -191,7 +190,7 @@ Future<void> exportAnalysisToPDF({
 }
 
 Future<void> exportAnalysisToCSV({
-  required List<DocumentSnapshot> transactions,
+  required List<LocalDocSnapshot> transactions,
   required DateTime month,
   required BuildContext context,
 }) async {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 import 'package:intl/intl.dart';
 
 class CustomerManagementScreen extends StatefulWidget {
@@ -15,7 +15,7 @@ class _CustomerManagementScreenState extends State<CustomerManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final usersRef = FirebaseFirestore.instance
+    final usersRef = LocalFirestore.instance
         .collection('users')
         .where('role', isEqualTo: 'customer');
 
@@ -44,7 +44,7 @@ class _CustomerManagementScreenState extends State<CustomerManagementScreen> {
                     const SizedBox(height: 16),
 
                     // 🔢 Metrics
-                    StreamBuilder<QuerySnapshot>(
+                    StreamBuilder<LocalQuerySnapshot>(
                       stream: usersRef.snapshots(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
@@ -53,11 +53,11 @@ class _CustomerManagementScreenState extends State<CustomerManagementScreen> {
                         final docs = snapshot.data!.docs;
                         final total = docs.length;
                         final active = docs.where((doc) {
-                          final data = doc.data() as Map<String, dynamic>;
+                          final data = doc.data();
                           return data['is_active'] == true;
                         }).length;
                         final inactive = docs.where((doc) {
-                          final data = doc.data() as Map<String, dynamic>;
+                          final data = doc.data();
                           return data['is_active'] == false;
                         }).length;
 
@@ -101,7 +101,7 @@ class _CustomerManagementScreenState extends State<CustomerManagementScreen> {
 
                     // 👥 Customer List
                     Expanded(
-                      child: StreamBuilder<QuerySnapshot>(
+                      child: StreamBuilder<LocalQuerySnapshot>(
                         stream: usersRef.orderBy('full_name').snapshots(),
                         builder: (context, snapshot) {
                           if (!snapshot.hasData) {
@@ -109,7 +109,7 @@ class _CustomerManagementScreenState extends State<CustomerManagementScreen> {
                           }
 
                           final filtered = snapshot.data!.docs.where((doc) {
-                            final data = doc.data() as Map<String, dynamic>;
+                            final data = doc.data();
                             final name = (data['full_name'] ?? '').toString().toLowerCase();
                             final phone = (data['phone_number'] ?? '').toString().toLowerCase();
                             return name.contains(_searchTerm) || phone.contains(_searchTerm);
@@ -125,7 +125,7 @@ class _CustomerManagementScreenState extends State<CustomerManagementScreen> {
                             itemCount: filtered.length,
                             itemBuilder: (context, index) {
                               final doc = filtered[index];
-                              final data = doc.data() as Map<String, dynamic>;
+                              final data = doc.data();
                               final created = (data['created_at'] as Timestamp?)?.toDate();
                               final dateStr = created != null
                                   ? DateFormat('yyyy-MM-dd').format(created)

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 import 'package:intl/intl.dart';
 import 'package:smartconnect/assign_voucher_to_customer_dialog.dart';
 
 class ViewCustomerDialog extends StatelessWidget {
-  final DocumentSnapshot document;
+  final LocalDocSnapshot document;
 
   const ViewCustomerDialog({super.key, required this.document});
 
@@ -83,7 +83,7 @@ class ViewCustomerDialog extends StatelessWidget {
           ),
           onPressed: () async {
             final newStatus = status == 'active' ? 'inactive' : 'active';
-            await FirebaseFirestore.instance
+            await LocalFirestore.instance
                 .collection('users')
                 .doc(uid)
                 .update({'status': newStatus});
@@ -122,7 +122,7 @@ class ViewVoucherHistoryDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final vouchersRef = FirebaseFirestore.instance
+    final vouchersRef = LocalFirestore.instance
         .collection('vouchers')
         .where('assigned_to.uid', isEqualTo: customerUid);
 
@@ -130,7 +130,7 @@ class ViewVoucherHistoryDialog extends StatelessWidget {
       title: const Text('Voucher History'),
       content: SizedBox(
         width: double.maxFinite,
-        child: StreamBuilder<QuerySnapshot>(
+        child: StreamBuilder<LocalQuerySnapshot>(
           stream: vouchersRef.snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
@@ -150,7 +150,7 @@ class ViewVoucherHistoryDialog extends StatelessWidget {
               shrinkWrap: true,
               itemCount: docs.length,
               itemBuilder: (context, index) {
-                final v = docs[index].data() as Map<String, dynamic>;
+                final v = docs[index].data();
                 final code = v['code'] ?? '';
                 final pkg = v['package'] ?? '';
                 final net = v['network'] ?? '';

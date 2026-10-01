@@ -1,10 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 
 class BookingStatusService {
   /// ✅ Check status by reading Firestore transaction document
   static Future<String> checkStatus(String orderTrackingId) async {
     try {
-      final doc = await FirebaseFirestore.instance
+      final doc = await LocalFirestore.instance
           .collection('transactions')
           .doc(orderTrackingId)
           .get();
@@ -31,7 +31,7 @@ class BookingStatusService {
   /// ✅ Fetch transaction details from Firestore
   static Future<Map<String, dynamic>> fetchDetails(String orderTrackingId) async {
     try {
-      final doc = await FirebaseFirestore.instance
+      final doc = await LocalFirestore.instance
           .collection('transactions')
           .doc(orderTrackingId)
           .get();

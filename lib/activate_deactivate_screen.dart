@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 
 class ActivateDeactivateScreen extends StatefulWidget {
   const ActivateDeactivateScreen({super.key});
@@ -87,8 +87,8 @@ class _ActivateDeactivateScreenState extends State<ActivateDeactivateScreen>
             ),
           ),
           Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
+            child: StreamBuilder<LocalQuerySnapshot>(
+              stream: LocalFirestore.instance
                   .collection('users')
                   .orderBy('full_name')
                   .snapshots(),
@@ -98,7 +98,7 @@ class _ActivateDeactivateScreenState extends State<ActivateDeactivateScreen>
                 }
 
                 final allDocs = snapshot.data!.docs.where((doc) {
-                  final data = doc.data() as Map<String, dynamic>;
+                  final data = doc.data();
                   final name = (data['full_name'] ?? '').toString().toLowerCase();
                   final isAdmin = data['is_admin'] == true;
                   return name.contains(_searchQuery) &&
@@ -106,12 +106,12 @@ class _ActivateDeactivateScreenState extends State<ActivateDeactivateScreen>
                 }).toList();
 
                 final activeDocs = allDocs.where((doc) {
-                  final data = doc.data() as Map<String, dynamic>;
+                  final data = doc.data();
                   return data['is_active'] == true;
                 }).toList();
 
                 final inactiveDocs = allDocs.where((doc) {
-                  final data = doc.data() as Map<String, dynamic>;
+                  final data = doc.data();
                   return data['is_active'] == false;
                 }).toList();
 
@@ -133,7 +133,7 @@ class _ActivateDeactivateScreenState extends State<ActivateDeactivateScreen>
                       itemCount: docs.length,
                       itemBuilder: (context, index) {
                         final doc = docs[index];
-                        final data = doc.data() as Map<String, dynamic>;
+                        final data = doc.data();
                         final name = data['full_name']?.toString().trim();
                         final displayName = (name == null || name.isEmpty)
                             ? data['phone_number'] ?? data['uid'] ?? 'Unknown'
@@ -187,7 +187,7 @@ class _ActivateDeactivateScreenState extends State<ActivateDeactivateScreen>
                                   value: isActive,
                                   activeColor: Colors.greenAccent,
                                   onChanged: (value) {
-                                    FirebaseFirestore.instance
+                                    LocalFirestore.instance
                                         .collection('users')
                                         .doc(doc.id)
                                         .update({'is_active': value});
@@ -197,7 +197,7 @@ class _ActivateDeactivateScreenState extends State<ActivateDeactivateScreen>
                                   icon: const Icon(Icons.more_vert, color: Colors.white),
                                   onSelected: (value) {
                                     if (value == 'make_admin') {
-                                      FirebaseFirestore.instance
+                                      LocalFirestore.instance
                                           .collection('users')
                                           .doc(doc.id)
                                           .update({
@@ -205,7 +205,7 @@ class _ActivateDeactivateScreenState extends State<ActivateDeactivateScreen>
                                             'role': 'admin',
                                           });
                                     } else if (value == 'remove_admin') {
-                                      FirebaseFirestore.instance
+                                      LocalFirestore.instance
                                           .collection('users')
                                           .doc(doc.id)
                                           .update({

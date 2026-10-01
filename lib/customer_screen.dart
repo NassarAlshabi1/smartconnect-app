@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 import 'package:intl/intl.dart';
 import 'customer_notification_screen.dart'; // hakikisha ume-import
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 
 
@@ -16,47 +14,17 @@ class CustomerDashboardScreen extends StatefulWidget {
 
 class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
   int _selectedIndex = 0;
-  final uid = FirebaseAuth.instance.currentUser!.uid;
+  final uid = LocalAuth.instance.currentUser!.uid;
 
   @override
   void initState() {
     super.initState();
-    setupPushNotifications();
-    listenToForegroundMessages();
-  }
-
-  void setupPushNotifications() async {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-    await messaging.requestPermission();
-
-    String? token = await messaging.getToken();
-    print('📱 FCM Token: $token');
-
-    await FirebaseFirestore.instance.collection('users').doc(uid).update({
-      'fcm_token': token,
-    });
-  }
-
-  void listenToForegroundMessages() {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      final title = message.notification?.title ?? 'SmartConnect';
-      final body = message.notification?.body ?? 'You have a new message';
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$title: $body'),
-          duration: const Duration(seconds: 4),
-          backgroundColor: Colors.deepPurple,
-        ),
-      );
-    });
   }
 
 @override
   Widget build(BuildContext context) {
-    final userStream = FirebaseFirestore.instance.collection('users').doc(uid).snapshots();
-    final vouchersStream = FirebaseFirestore.instance
+    final userStream = LocalFirestore.instance.collection('users').doc(uid).snapshots();
+    final vouchersStream = LocalFirestore.instance
         .collection('vouchers')
         .where('assigned_to', isEqualTo: uid)
         .snapshots();
@@ -77,8 +45,8 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
           ],
         ),
         actions: [
-          StreamBuilder<QuerySnapshot>(
-  stream: FirebaseFirestore.instance
+          StreamBuilder<LocalQuerySnapshot>(
+  stream: LocalFirestore.instance
       .collection('users')
       .doc(uid)
       .collection('notifications')
@@ -129,13 +97,13 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
-              await FirebaseAuth.instance.signOut();
+              await LocalAuth.instance.signOut();
               Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
             },
           ),
         ],
       ),
-      body: StreamBuilder<DocumentSnapshot>(
+      body: StreamBuilder<LocalDocSnapshot>(
         stream: userStream,
         builder: (context, snapshot) {
           if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
@@ -167,7 +135,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                 ),
                 const SizedBox(height: 24),
                 // 📊 Metrics Cards
-StreamBuilder<QuerySnapshot>(
+StreamBuilder<LocalQuerySnapshot>(
   stream: vouchersStream,
   builder: (context, snapshot) {
     if (!snapshot.hasData) {
@@ -200,7 +168,7 @@ const SizedBox(height: 24),
 const Text('Recent Activity',
     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
 const SizedBox(height: 12),
-StreamBuilder<QuerySnapshot>(
+StreamBuilder<LocalQuerySnapshot>(
   stream: vouchersStream,
   builder: (context, snapshot) {
     if (!snapshot.hasData) {

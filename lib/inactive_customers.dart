@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 
 class InactiveCustomers extends StatelessWidget {
   final DateTime currentMonth;
-  final List<DocumentSnapshot> payments;
+  final List<LocalDocSnapshot> payments;
 
   const InactiveCustomers({
     super.key,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:smartconnect/local_backend.dart';
 import 'package:animate_do/animate_do.dart'; // Ensure this is added in pubspec.yaml
 
 class ProfileScreen extends StatelessWidget {
@@ -8,8 +7,8 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-    final userStream = FirebaseFirestore.instance.collection('users').doc(uid).snapshots();
+    final uid = LocalAuth.instance.currentUser!.uid;
+    final userStream = LocalFirestore.instance.collection('users').doc(uid).snapshots();
 
     return Scaffold(
       appBar: AppBar(
@@ -25,7 +24,7 @@ class ProfileScreen extends StatelessWidget {
             end: Alignment.bottomRight,
           ),
         ),
-        child: StreamBuilder<DocumentSnapshot>(
+        child: StreamBuilder<LocalDocSnapshot>(
           stream: userStream,
           builder: (context, snapshot) {
             if (!snapshot.hasData) {

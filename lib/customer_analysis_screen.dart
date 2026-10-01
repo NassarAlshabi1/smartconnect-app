@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 import 'package:intl/intl.dart';
 import 'top_paying_customers.dart';
 import 'most_frequent_payers.dart';
@@ -8,7 +8,7 @@ import 'payment_method_breakdown.dart';
 import 'analysis_export_helper.dart';
 
 class CustomerAnalysisScreen extends StatefulWidget {
-  final List<DocumentSnapshot> allTransactions;
+  final List<LocalDocSnapshot> allTransactions;
 
   const CustomerAnalysisScreen({super.key, required this.allTransactions});
 
@@ -25,7 +25,7 @@ class _CustomerAnalysisScreenState extends State<CustomerAnalysisScreen> {
     selectedMonth = DateTime.now();
   }
 
-  List<DocumentSnapshot> get filteredTransactions {
+  List<LocalDocSnapshot> get filteredTransactions {
     return widget.allTransactions.where((doc) {
       final raw = doc['created_at'];
       final status = doc['status']?.toString().toUpperCase();

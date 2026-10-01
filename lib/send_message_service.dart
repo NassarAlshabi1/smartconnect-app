@@ -1,11 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 
 class SendMessageService {
   static Future<void> sendMessageToAllCustomers({required String message}) async {
-    final usersRef = FirebaseFirestore.instance.collection('users');
+    final usersRef = LocalFirestore.instance.collection('users');
     final customers = await usersRef.where('role', isEqualTo: 'customer').get();
 
-    final batch = FirebaseFirestore.instance.batch();
+    final batch = LocalFirestore.instance.batch();
     final now = DateTime.now();
 
     for (final doc in customers.docs) {

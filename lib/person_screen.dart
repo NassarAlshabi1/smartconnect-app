@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 
 class PersonScreen extends StatelessWidget {
   const PersonScreen({super.key});
@@ -11,8 +11,8 @@ class PersonScreen extends StatelessWidget {
         title: const Text('Customer Feedback'),
         backgroundColor: Colors.teal.shade700,
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
+      body: StreamBuilder<LocalQuerySnapshot>(
+        stream: LocalFirestore.instance
             .collection('feedbacks')
             .orderBy('timestamp', descending: true)
             .snapshots(),
@@ -36,7 +36,7 @@ class PersonScreen extends StatelessWidget {
             itemCount: messages.length,
             itemBuilder: (context, index) {
               final doc = messages[index];
-              final data = doc.data() as Map<String, dynamic>;
+              final data = doc.data();
 
               final message = data['message'] ?? '';
               final timestamp = data['timestamp'] as Timestamp?;

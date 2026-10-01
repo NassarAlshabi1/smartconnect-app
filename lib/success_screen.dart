@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 import 'booking_status_service.dart';
 
 class SuccessScreen extends StatefulWidget {
@@ -49,7 +48,7 @@ class _SuccessScreenState extends State<SuccessScreen> {
       });
 
       if (status == "COMPLETED") {
-        final snapshot = await FirebaseFirestore.instance
+        final snapshot = await LocalFirestore.instance
             .collection('transactions')
             .doc(widget.orderTrackingId)
             .get();
@@ -99,7 +98,7 @@ class _SuccessScreenState extends State<SuccessScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final uid = LocalAuth.instance.currentUser?.uid;
 
     if (uid == null) {
       return const Scaffold(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 import 'package:smartconnect/add_voucher_dialog.dart';
 import 'package:smartconnect/edit_voucher_dialog.dart';
 import 'package:smartconnect/view_voucher_dialog.dart';
@@ -25,7 +25,7 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
   }
 
   void _fetchPackageOptions() async {
-    final snapshot = await FirebaseFirestore.instance.collection('voucher_packages').get();
+    final snapshot = await LocalFirestore.instance.collection('voucher_packages').get();
     final names = snapshot.docs.map((doc) {
       final data = doc.data();
       return data['name']?.toString() ?? '';
@@ -38,7 +38,7 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final voucherStream = FirebaseFirestore.instance
+    final voucherStream = LocalFirestore.instance
         .collection('vouchers')
         .orderBy('created_at', descending: true)
         .snapshots();
@@ -117,14 +117,14 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
           ),
           const SizedBox(height: 8),
           Expanded(
-            child: StreamBuilder<QuerySnapshot>(
+            child: StreamBuilder<LocalQuerySnapshot>(
               stream: voucherStream,
               builder: (context, snapshot) {
                 if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
 
                 final docs = snapshot.data!.docs;
                 final filtered = docs.where((doc) {
-                  final data = doc.data() as Map<String, dynamic>;
+                  final data = doc.data();
                   final code = data['code']?.toString().toLowerCase() ?? '';
                   final package = data['package']?.toString().toLowerCase() ?? '';
                   final network = data['network']?.toString().toLowerCase() ?? '';
@@ -146,9 +146,8 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
                   itemCount: filtered.length,
                   itemBuilder: (context, index) {
                     final doc = filtered[index];
-                    final voucher = doc.data() as Map<String, dynamic>;
+                    final voucher = doc.data();
                     final expiry = (voucher['expiry'] as Timestamp).toDate();
-                    final status = voucher['status'] ?? 'unknown';
 
                     return Card(
                       child: ListTile(
@@ -215,16 +214,4 @@ class _VoucherManagementScreenState extends State<VoucherManagementScreen> {
     );
   }
 
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'used':
-        return Colors.green.shade400;
-      case 'assigned':
-        return Colors.blue.shade300;
-      case 'expired':
-        return Colors.grey;
-      default:
-        return Colors.orange.shade300;
-    }
-  }
 }

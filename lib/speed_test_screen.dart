@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 
 class ManageVoucherPackagesScreen extends StatefulWidget {
   const ManageVoucherPackagesScreen({super.key});
@@ -18,7 +18,7 @@ class _ManageVoucherPackagesScreenState extends State<ManageVoucherPackagesScree
       final name = _nameController.text.trim();
       final price = int.parse(_priceController.text.trim());
 
-      await FirebaseFirestore.instance.collection('voucher_packages').add({
+      await LocalFirestore.instance.collection('voucher_packages').add({
         'name': name,
         'price': price,
         'created_at': Timestamp.now(),
@@ -67,7 +67,7 @@ class _ManageVoucherPackagesScreenState extends State<ManageVoucherPackagesScree
                 final newName = _nameController.text.trim();
                 final newPrice = int.parse(_priceController.text.trim());
 
-                await FirebaseFirestore.instance.collection('voucher_packages').doc(docId).update({
+                await LocalFirestore.instance.collection('voucher_packages').doc(docId).update({
                   'name': newName,
                   'price': newPrice,
                 });
@@ -85,7 +85,7 @@ class _ManageVoucherPackagesScreenState extends State<ManageVoucherPackagesScree
   }
 
   Future<void> _deletePackage(String docId) async {
-    await FirebaseFirestore.instance.collection('voucher_packages').doc(docId).delete();
+    await LocalFirestore.instance.collection('voucher_packages').doc(docId).delete();
   }
 
   void _showAddDialog() {
@@ -138,8 +138,8 @@ class _ManageVoucherPackagesScreenState extends State<ManageVoucherPackagesScree
           ),
         ],
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('voucher_packages').orderBy('created_at').snapshots(),
+      body: StreamBuilder<LocalQuerySnapshot>(
+        stream: LocalFirestore.instance.collection('voucher_packages').orderBy('created_at').snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -156,7 +156,7 @@ class _ManageVoucherPackagesScreenState extends State<ManageVoucherPackagesScree
             itemBuilder: (_, i) {
               final data = docs[i];
               final docId = data.id;
-              final map = data.data() as Map<String, dynamic>;
+              final map = data.data();
               final name = map['name'];
               final price = map['price'];
 

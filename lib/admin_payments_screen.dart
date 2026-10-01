@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 import 'package:intl/intl.dart';
 import 'payments_graph.dart';
 import 'export_helper.dart';
@@ -15,16 +15,16 @@ class AdminPaymentsScreen extends StatefulWidget {
 class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
   String searchQuery = '';
   DateTime currentMonth = DateTime.now();
-  List<DocumentSnapshot> filteredPayments = [];
+  List<LocalDocSnapshot> filteredPayments = [];
 
-  Stream<QuerySnapshot> getPaymentsStream() {
-    return FirebaseFirestore.instance
+  Stream<LocalQuerySnapshot> getPaymentsStream() {
+    return LocalFirestore.instance
         .collection('transactions')
         .orderBy('created_at', descending: true)
         .snapshots();
   }
 
-  List<DocumentSnapshot> filterPayments(List<DocumentSnapshot> allDocs) {
+  List<LocalDocSnapshot> filterPayments(List<LocalDocSnapshot> allDocs) {
     return allDocs.where((doc) {
       final status = doc['status']?.toString().toUpperCase() ?? '';
       if (status != 'COMPLETED') return false;
@@ -124,7 +124,7 @@ class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
           ),
         ],
       ),
-      body: StreamBuilder<QuerySnapshot>(
+      body: StreamBuilder<LocalQuerySnapshot>(
         stream: getPaymentsStream(),
         builder: (context, snapshot) {
           filteredPayments = snapshot.hasData

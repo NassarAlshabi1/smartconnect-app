@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:smartconnect/local_backend.dart';
 import 'package:intl/intl.dart';
 
 class CustomerNotificationScreen extends StatelessWidget {
@@ -8,8 +7,8 @@ class CustomerNotificationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-    final notificationsRef = FirebaseFirestore.instance
+    final uid = LocalAuth.instance.currentUser!.uid;
+    final notificationsRef = LocalFirestore.instance
         .collection('users')
         .doc(uid)
         .collection('notifications')
@@ -20,7 +19,7 @@ class CustomerNotificationScreen extends StatelessWidget {
         title: const Text('Notifications'),
         backgroundColor: Colors.deepPurple,
       ),
-      body: StreamBuilder<QuerySnapshot>(
+      body: StreamBuilder<LocalQuerySnapshot>(
         stream: notificationsRef.snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -38,7 +37,7 @@ class CustomerNotificationScreen extends StatelessWidget {
             itemCount: docs.length,
             itemBuilder: (context, index) {
               final doc = docs[index];
-              final data = doc.data() as Map<String, dynamic>;
+              final data = doc.data();
 
               final timestamp = (data['sent_at'] ?? data['timestamp']) as Timestamp?;
               final formattedDate = timestamp != null

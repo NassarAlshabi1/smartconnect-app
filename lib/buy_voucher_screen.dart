@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 import 'package:shimmer/shimmer.dart';
 
 class BuyVoucherScreen extends StatefulWidget {
@@ -30,7 +30,7 @@ class _BuyVoucherScreenState extends State<BuyVoucherScreen> {
 
   Future<void> _loadNetworkOptions() async {
     try {
-      final snapshot = await FirebaseFirestore.instance.collection('networks').get();
+      final snapshot = await LocalFirestore.instance.collection('networks').get();
       final networks = snapshot.docs.map((doc) => doc['name'].toString()).toList();
       setState(() {
         networkOptions = networks;
@@ -53,7 +53,7 @@ class _BuyVoucherScreenState extends State<BuyVoucherScreen> {
     });
 
     try {
-      final snapshot = await FirebaseFirestore.instance
+      final snapshot = await LocalFirestore.instance
           .collection('network_packages')
           .where('network', isEqualTo: network)
           .limit(1)
@@ -83,7 +83,7 @@ class _BuyVoucherScreenState extends State<BuyVoucherScreen> {
     });
 
     try {
-      final snapshot = await FirebaseFirestore.instance
+      final snapshot = await LocalFirestore.instance
           .collection('voucher_packages')
           .where('name', isEqualTo: packageName)
           .limit(1)
@@ -136,7 +136,6 @@ class _BuyVoucherScreenState extends State<BuyVoucherScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = isLoadingNetworks || isLoadingPackages;
 
     return Scaffold(
       appBar: AppBar(

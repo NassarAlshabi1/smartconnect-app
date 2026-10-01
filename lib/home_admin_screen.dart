@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 
 class HomeAdminScreen extends StatefulWidget {
   const HomeAdminScreen({super.key});
@@ -24,7 +24,7 @@ class _HomeAdminScreenState extends State<HomeAdminScreen> {
     setState(() => _isSaving = true);
 
     try {
-      await FirebaseFirestore.instance.collection('networks').add({
+      await LocalFirestore.instance.collection('networks').add({
         'name': name,
         'created_at': FieldValue.serverTimestamp(),
       });
@@ -44,10 +44,10 @@ class _HomeAdminScreenState extends State<HomeAdminScreen> {
   }
 
   Future<void> _assignPackages(String networkName) async {
-    final snapshot = await FirebaseFirestore.instance.collection('voucher_packages').get();
+    final snapshot = await LocalFirestore.instance.collection('voucher_packages').get();
     final allPackages = snapshot.docs.map((doc) => doc['name'].toString()).toList();
 
-    final assignmentSnapshot = await FirebaseFirestore.instance
+    final assignmentSnapshot = await LocalFirestore.instance
         .collection('network_packages')
         .where('network', isEqualTo: networkName)
         .limit(1)
@@ -94,11 +94,11 @@ class _HomeAdminScreenState extends State<HomeAdminScreen> {
                 ElevatedButton(
                   onPressed: () async {
                     if (docId != null) {
-                      await FirebaseFirestore.instance.collection('network_packages').doc(docId).update({
+                      await LocalFirestore.instance.collection('network_packages').doc(docId).update({
                         'packages': selectedPackages,
                       });
                     } else {
-                      await FirebaseFirestore.instance.collection('network_packages').add({
+                      await LocalFirestore.instance.collection('network_packages').add({
                         'network': networkName,
                         'packages': selectedPackages,
                         'assigned_at': FieldValue.serverTimestamp(),
@@ -120,7 +120,7 @@ class _HomeAdminScreenState extends State<HomeAdminScreen> {
   }
 
   Future<void> _deleteNetwork(String docId) async {
-    await FirebaseFirestore.instance.collection('networks').doc(docId).delete();
+    await LocalFirestore.instance.collection('networks').doc(docId).delete();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('🗑️ Network deleted')),
     );
@@ -181,8 +181,8 @@ class _HomeAdminScreenState extends State<HomeAdminScreen> {
             ),
             const SizedBox(height: 12),
             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
+              child: StreamBuilder<LocalQuerySnapshot>(
+                stream: LocalFirestore.instance
                     .collection('networks')
                     .orderBy('created_at', descending: true)
                     .snapshots(),

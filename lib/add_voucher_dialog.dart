@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 
 class AddVoucherDialog extends StatefulWidget {
   const AddVoucherDialog({super.key});
@@ -31,7 +31,7 @@ class _AddVoucherDialogState extends State<AddVoucherDialog> {
 
   Future<void> _loadNetworkOptions() async {
     try {
-      final snapshot = await FirebaseFirestore.instance.collection('networks').get();
+      final snapshot = await LocalFirestore.instance.collection('networks').get();
       final names = snapshot.docs.map((doc) => doc['name'].toString()).toList();
       setState(() {
         networkOptions = names;
@@ -47,7 +47,7 @@ class _AddVoucherDialogState extends State<AddVoucherDialog> {
 
   Future<void> _loadPackageOptions() async {
     try {
-      final snapshot = await FirebaseFirestore.instance.collection('voucher_packages').get();
+      final snapshot = await LocalFirestore.instance.collection('voucher_packages').get();
       final names = snapshot.docs.map((doc) => doc['name'].toString()).toList();
       setState(() {
         packageOptions = names;
@@ -63,7 +63,7 @@ class _AddVoucherDialogState extends State<AddVoucherDialog> {
 
   Future<void> _submitVoucher() async {
     if (_formKey.currentState!.validate() && expiryDate != null) {
-      await FirebaseFirestore.instance.collection('vouchers').add({
+      await LocalFirestore.instance.collection('vouchers').add({
         'code': _codeController.text.trim(),
         'network': selectedNetwork,
         'package': selectedPackage,

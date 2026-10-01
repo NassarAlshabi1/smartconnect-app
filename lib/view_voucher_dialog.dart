@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartconnect/local_backend.dart';
 
 class ViewVoucherDialog extends StatelessWidget {
   final Map<String, dynamic> voucher;
